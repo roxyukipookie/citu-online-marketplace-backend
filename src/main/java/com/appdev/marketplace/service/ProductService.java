@@ -31,7 +31,7 @@ public class ProductService {
 		return prepo.save(productentity);
 	}*/
 	
-	public void postProduct(String name, String pdtDescription, int qtyInStock, float buyPrice, String imagePath) {
+	public void postProduct(String name, String pdtDescription, int qtyInStock, float buyPrice, String imagePath, String category, String status, String conditionType) {
         // Create and save the product
         ProductEntity productentity = new ProductEntity();
         productentity.setName(name);
@@ -39,6 +39,9 @@ public class ProductService {
         productentity.setQtyInStock(qtyInStock);
         productentity.setBuyPrice(buyPrice);
         productentity.setImagePath(imagePath);  // Store the image path
+        productentity.setCategory(category);
+        productentity.setStatus(status);
+        productentity.setConditionType(conditionType);
 
         prepo.save(productentity);  
     }
@@ -64,6 +67,9 @@ public class ProductService {
 			productentity.setPdtDescription(newProductEntity.getPdtDescription());
 			productentity.setQtyInStock(newProductEntity.getQtyInStock());
 			productentity.setBuyPrice(newProductEntity.getBuyPrice());
+			productentity.setCategory(newProductEntity.getCategory());
+			productentity.setStatus(newProductEntity.getStatus());
+			productentity.setConditionType(newProductEntity.getConditionType());
 			
 		}catch(NoSuchElementException ex) {
 			throw new NameNotFoundException("Product "+code+" not found!");

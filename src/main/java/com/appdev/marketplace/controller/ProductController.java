@@ -54,7 +54,10 @@ public class ProductController {
 	        @RequestParam("pdtDescription") String description,
 	        @RequestParam("qtyInStock") int quantity,
 	        @RequestParam("buyPrice") float price,
-	        @RequestParam("image") MultipartFile image) {
+	        @RequestParam("image") MultipartFile image,
+	        @RequestParam("category") String category,
+	        @RequestParam("status") String status,
+	        @RequestParam("conditionType") String conditionType ) {
 	    
 	    if (image.isEmpty()) {
 	        return new ResponseEntity<>("Image file not found!", HttpStatus.BAD_REQUEST);
@@ -72,7 +75,7 @@ public class ProductController {
 	    } catch (IOException e) {
 	        return new ResponseEntity<>("Error saving image!", HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
-	    pserv.postProduct(name, description, quantity, price, imagePath); 
+	    pserv.postProduct(name, description, quantity, price, imagePath, category, status, conditionType); 
 
 	    return new ResponseEntity<>("Product added with image path successfully", HttpStatus.OK);
 	}

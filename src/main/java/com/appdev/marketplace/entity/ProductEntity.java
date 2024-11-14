@@ -18,12 +18,15 @@ public class ProductEntity {
     private int qtyInStock;
     private float buyPrice;
     private String imagePath;  
+    private String category;
+    private String status;
+    private String conditionType;
 
     public ProductEntity() {
         super();
     }
 
-    public ProductEntity(int code, String name, String pdtDescription, int qtyInStock, float buyPrice, String imagePath) {
+    public ProductEntity(int code, String name, String pdtDescription, int qtyInStock, float buyPrice, String imagePath, String category, String status, String conditionType) {
         super();
         this.code = code;
         this.name = name;
@@ -31,6 +34,9 @@ public class ProductEntity {
         this.qtyInStock = qtyInStock;
         this.buyPrice = buyPrice;
         this.imagePath = imagePath;
+        this.category = category;
+        this.status = status;
+        this.conditionType = conditionType;
     }
 
     public int getCode() {
@@ -79,5 +85,29 @@ public class ProductEntity {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+    
+    public String getCategory() {
+    	return category;
+    }
+    
+    public void setCategory(String category) {
+    	this.category = category;
+    }
+    
+    public String getStatus() {
+    	return status;
+    }
+    
+    public void setStatus(String status) {
+    	this.status = status;
+    }
+    
+    public String getConditionType() {
+    	return conditionType;
+    }
+    
+    public void setConditionType(String conditionType) {
+    	this.conditionType = conditionType;
     }
 }
