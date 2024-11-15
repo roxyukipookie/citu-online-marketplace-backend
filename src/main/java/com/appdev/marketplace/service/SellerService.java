@@ -7,6 +7,8 @@ import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.appdev.marketplace.dto.ChangePassword;
 import com.appdev.marketplace.entity.SellerEntity;
 import com.appdev.marketplace.repository.SellerRepository;
 
@@ -32,23 +34,39 @@ public class SellerService {
 		return sellerRepo.findAll();
 	}
 	
+	public SellerEntity getSellerByUsername(String username) throws NameNotFoundException {
+		return sellerRepo.findById(username).orElseThrow(() -> new NameNotFoundException("Seller with username: " + username + " not found."));
+	}
+	
 	//UPDATE
 	public SellerEntity putSellerDetails(String username, SellerEntity newSellerDetails) throws NameNotFoundException {
 	    SellerEntity seller = sellerRepo.findById(username)
 	        .orElseThrow(() -> new NameNotFoundException("Seller with username: " + username + " does not exist"));
 
-	    // Update fields with values from newSellerDetails
-	    if (newSellerDetails.getPassword() != null) {
-	        seller.setPassword(newSellerDetails.getPassword()); // Update password if it's not null
+	    if (newSellerDetails.getProfilePhoto() != null) {
+	        System.out.println("Updated Profile Photo: " + newSellerDetails.getProfilePhoto()); // Add a log here
 	    }
+	    
+	    //seller.setProfilePhoto(newSellerDetails.getProfilePhoto());
 	    seller.setFirstName(newSellerDetails.getFirstName());
 	    seller.setLastName(newSellerDetails.getLastName());
 	    seller.setAddress(newSellerDetails.getAddress());
 	    seller.setContactNo(newSellerDetails.getContactNo());
 	    seller.setEmail(newSellerDetails.getEmail());
 
-	    // Save and return the updated seller
 	    return sellerRepo.save(seller);
+	}
+	
+	public SellerEntity updatePassword(String username, ChangePassword passwordRequest) throws NameNotFoundException{
+		SellerEntity seller = sellerRepo.findById(username)
+		        .orElseThrow(() -> new NameNotFoundException("Seller with username: " + username + " does not exist"));
+		
+		if(!seller.getPassword().equals(passwordRequest.getCurrentPassword())) {
+			throw new RuntimeException("Current password is incorrect.");
+		}
+		
+		seller.setPassword(passwordRequest.getNewPassword());
+		return sellerRepo.save(seller);
 	}
 	
 	//DELETE
@@ -81,11 +99,5 @@ public class SellerService {
 	        System.out.println("Password does not match.");
 	        throw new RuntimeException("Invalid password");
 	    }
-		
-		/*if(seller != null && seller.getPassword().equals(password)) {
-			return seller; //return seller entity when authentication is successful
-		} else {
-			return null;
-		}*/
 	}
 }

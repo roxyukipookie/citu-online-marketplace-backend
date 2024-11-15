@@ -7,12 +7,6 @@ import jakarta.persistence.Id;
 
 @Entity
 public class SellerEntity {
-	/* Things to do:
-	 * hash password to ensure security
-	 * pass token every login
-	 * make login ui
-	*/
-	
 	@Id
 	private String username;
 	
@@ -22,13 +16,14 @@ public class SellerEntity {
 	private String email;
 	private String address;
 	private String password;
+	private String profilePhoto;
 
 	public SellerEntity() {
 		// TODO Auto-generated constructor stub
 		super();
 	}
 	
-	public SellerEntity(String username, String firstName, String lastName, String contactNo, String email, String address, String password) {
+	public SellerEntity(String username, String firstName, String lastName, String contactNo, String email, String address, String password, String profilePhoto) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -37,6 +32,7 @@ public class SellerEntity {
 		this.address = address;
 		this.username = username;
 		this.password = password;
+		this.profilePhoto = profilePhoto;
 	}
 	
 	// getters and setters
@@ -94,5 +90,13 @@ public class SellerEntity {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public String getProfilePhoto() {
+		return profilePhoto;
+	}
+
+	public void setProfilePhoto(String profilePhoto) {
+		this.profilePhoto = profilePhoto;
 	}
 }
