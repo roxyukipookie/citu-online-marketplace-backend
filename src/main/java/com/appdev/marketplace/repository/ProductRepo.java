@@ -1,5 +1,6 @@
 package com.appdev.marketplace.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,5 +21,8 @@ public interface ProductRepo extends JpaRepository<ProductEntity, Integer>{
     @Modifying
     @Transactional  
     void deleteByCode(int code);  
+    
+    //find by seller
+    List<ProductEntity> findBySellerUsername(String sellerUsername);
 	
 }

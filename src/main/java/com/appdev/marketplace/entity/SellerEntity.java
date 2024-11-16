@@ -1,9 +1,10 @@
 package com.appdev.marketplace.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class SellerEntity {
@@ -22,6 +23,9 @@ public class SellerEntity {
 	private String email;
 	private String address;
 	private String password;
+	
+	@OneToMany(mappedBy = "seller")
+    private List<ProductEntity> products;
 
 	public SellerEntity() {
 		// TODO Auto-generated constructor stub
@@ -95,4 +99,12 @@ public class SellerEntity {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
+	public List<ProductEntity> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<ProductEntity> products) {
+        this.products = products;
+    }
 }

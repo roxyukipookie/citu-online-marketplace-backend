@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
-//import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -41,6 +41,16 @@ public class ProductController {
 		return "Mic Test 1 2 3, Check Mic Test";
 	}
 	
+	//get products by seller
+	@GetMapping("/getProductsBySeller/{username}")
+	public ResponseEntity<List<ProductEntity>> getProductsBySeller(@PathVariable String username) {
+	    List<ProductEntity> products = pserv.getProductsBySeller(username);
+	    if (products.isEmpty()) {
+	        return ResponseEntity.notFound().build();
+	    }
+	    return ResponseEntity.ok(products);
+	}
+	
 	
 	//Create of CRUD
 	/*@PostMapping("/postproduct")
@@ -50,35 +60,38 @@ public class ProductController {
 	
 	@PostMapping("/postproduct")
 	public ResponseEntity<String> postProduct(
-	        @RequestParam("name") String name,
-	        @RequestParam("pdtDescription") String description,
-	        @RequestParam("qtyInStock") int quantity,
-	        @RequestParam("buyPrice") float price,
-	        @RequestParam("image") MultipartFile image,
-	        @RequestParam("category") String category,
-	        @RequestParam("status") String status,
-	        @RequestParam("conditionType") String conditionType ) {
-	    
-	    if (image.isEmpty()) {
-	        return new ResponseEntity<>("Image file not found!", HttpStatus.BAD_REQUEST);
-	    }
+            @RequestParam("name") String name,
+            @RequestParam("pdtDescription") String description,
+            @RequestParam("qtyInStock") int quantity,
+            @RequestParam("buyPrice") float price,
+            @RequestParam("image") MultipartFile image,
+            @RequestParam("category") String category,
+            @RequestParam("status") String status,
+            @RequestParam("conditionType") String conditionType,
+            @RequestParam("sellerUsername") String sellerUsername) {  // Accept seller username
+        
+        // Save the image
+        if (image.isEmpty()) {
+            return new ResponseEntity<>("Image file not found!", HttpStatus.BAD_REQUEST);
+        }
+        File uploadDir = new File(UPLOAD_DIR + "uploads");
+        if (!uploadDir.exists()) uploadDir.mkdirs();
+        String imagePath = "uploads/" + image.getOriginalFilename();
+        try {
+            Files.copy(image.getInputStream(), Paths.get(UPLOAD_DIR + imagePath), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            return new ResponseEntity<>("Error saving image!", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        
+        // Call the service method to save product with associated seller
+        try {
+            pserv.postProduct(name, description, quantity, price, imagePath, category, status, conditionType, sellerUsername);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
 
-	    File uploadDir = new File(UPLOAD_DIR + "uploads");
-	    if (!uploadDir.exists()) {
-	        uploadDir.mkdirs();
-	    }
-
-	    String imagePath = "uploads/" + image.getOriginalFilename(); 
-
-	    try {
-	        Files.copy(image.getInputStream(), Paths.get(UPLOAD_DIR + imagePath), StandardCopyOption.REPLACE_EXISTING);
-	    } catch (IOException e) {
-	        return new ResponseEntity<>("Error saving image!", HttpStatus.INTERNAL_SERVER_ERROR);
-	    }
-	    pserv.postProduct(name, description, quantity, price, imagePath, category, status, conditionType); 
-
-	    return new ResponseEntity<>("Product added with image path successfully", HttpStatus.OK);
-	}
+        return new ResponseEntity<>("Product added successfully with image path", HttpStatus.OK);
+    }
 
 	
 	//Read of CRUD

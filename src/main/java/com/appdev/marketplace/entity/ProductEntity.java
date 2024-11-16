@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -21,12 +23,16 @@ public class ProductEntity {
     private String category;
     private String status;
     private String conditionType;
+    
+    @ManyToOne
+    @JoinColumn(name = "seller_username", nullable = false)
+    private SellerEntity seller;
 
     public ProductEntity() {
         super();
     }
 
-    public ProductEntity(int code, String name, String pdtDescription, int qtyInStock, float buyPrice, String imagePath, String category, String status, String conditionType) {
+    public ProductEntity(int code, String name, String pdtDescription, int qtyInStock, float buyPrice, String imagePath, String category, String status, String conditionType, SellerEntity seller) {
         super();
         this.code = code;
         this.name = name;
@@ -37,6 +43,7 @@ public class ProductEntity {
         this.category = category;
         this.status = status;
         this.conditionType = conditionType;
+        this.seller = seller;
     }
 
     public int getCode() {
@@ -109,5 +116,13 @@ public class ProductEntity {
     
     public void setConditionType(String conditionType) {
     	this.conditionType = conditionType;
+    }
+    
+    public SellerEntity getSeller() {
+        return seller;
+    }
+
+    public void setSeller(SellerEntity seller) {
+        this.seller = seller;
     }
 }
