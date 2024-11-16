@@ -8,9 +8,9 @@ import jakarta.persistence.OneToMany;
 
 @Entity
 public class SellerEntity {
+	
 	@Id
 	private String username;
-	
 	private String firstName;
 	private String lastName;
 	private String contactNo;
@@ -20,8 +20,8 @@ public class SellerEntity {
 	
 	@OneToMany(mappedBy = "seller")
     private List<ProductEntity> products;
+	
 	private String profilePhoto;
-
 
 	public SellerEntity() {
 		// TODO Auto-generated constructor stub
@@ -104,4 +104,12 @@ public class SellerEntity {
 	public void setProfilePhoto(String profilePhoto) {
 		this.profilePhoto = profilePhoto;
 	}
+	
+	public List<ProductEntity> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<ProductEntity> products) {
+        this.products = products;
+    }
 }
