@@ -23,6 +23,6 @@ public interface ProductRepo extends JpaRepository<ProductEntity, Integer>{
     void deleteByCode(int code);  
     
     //find by seller
-    List<ProductEntity> findBySellerUsername(String sellerUsername);
+    public List<ProductEntity> findBySellerUsername(String sellerUsername);
 	
 }

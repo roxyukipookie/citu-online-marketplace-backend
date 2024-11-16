@@ -68,7 +68,7 @@ public class ProductController {
             @RequestParam("category") String category,
             @RequestParam("status") String status,
             @RequestParam("conditionType") String conditionType,
-            @RequestParam("sellerUsername") String sellerUsername) {  // Accept seller username
+            @RequestParam("seller_username") String sellerUsername) {  // Accept seller username
         
         // Save the image
         if (image.isEmpty()) {

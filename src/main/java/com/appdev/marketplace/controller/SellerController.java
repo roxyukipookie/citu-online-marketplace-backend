@@ -40,8 +40,8 @@ public class SellerController {
 	@Autowired
 	private SellerService sellerService;
 	
-	private static final String UPLOAD_DIR = "C:/Users/Lloyd/Documents/Karen/profile-images"; // path to save the images
-		
+	private static final String UPLOAD_DIR = "C:/Users/Users/chriz/Downloads/"; // path to save the images
+
 	//CREATE
 	@PostMapping("/postSellerRecord")
 	public SellerEntity postSellerRecord(@RequestBody SellerEntity seller) throws NameAlreadyBoundException {
@@ -105,6 +105,15 @@ public class SellerController {
 	public SellerEntity getSellerByUsername(@PathVariable String username) throws NameNotFoundException {
 		return sellerService.getSellerByUsername(username);
 	}
+	
+	@GetMapping("/getUsername/{username}")
+    public String getSellerUsername(@PathVariable String username) throws NameNotFoundException {
+        SellerEntity seller = sellerService.getSellerByUsername(username);
+        if (seller == null) {
+            throw new NameNotFoundException("Seller with username " + username + " not found");
+        }
+        return seller.getUsername();
+    }
 		
 	//UPDATE RECORD
 	@PutMapping("/putSellerRecord/{username}")
