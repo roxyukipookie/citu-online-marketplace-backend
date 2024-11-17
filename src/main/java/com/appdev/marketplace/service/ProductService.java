@@ -28,16 +28,17 @@ public class ProductService {
 	public ProductService() {
 		super();
 	}
-
-	//Create of CRUD
 	
-	/*public ProductEntity postProduct(ProductEntity productentity) {
-		return prepo.save(productentity);
-	}*/
-	//get products by seller
+	//get products by logged in seller
 	public List<ProductEntity> getProductsBySeller(String sellerUsername) {
 	    return prepo.findBySellerUsername(sellerUsername);
 	}
+	
+	//fetches only the products where the seller's username does not match the logged-in seller's username 
+    public List<ProductEntity> getAllProducts(String username) {
+        List<ProductEntity> products = prepo.findBySellerUsernameNot(username);
+        return products;
+    }
 	
 	// Create a new product and associate it with a seller
     public void postProduct(String name, String pdtDescription, int qtyInStock, float buyPrice, 
@@ -65,11 +66,6 @@ public class ProductService {
         prepo.save(productentity);  
     }
     
-	//Read of CRUD 
-	public List< ProductEntity> getAllProducts(){
-		return prepo.findAll();
-	}
-	
 	public ProductEntity getProductByCode(int code) {
         Optional<ProductEntity> product = prepo.findById(code);
         return product.orElse(null); 

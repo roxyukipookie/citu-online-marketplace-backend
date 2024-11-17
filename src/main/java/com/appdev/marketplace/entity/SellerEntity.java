@@ -2,6 +2,10 @@ package com.appdev.marketplace.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -14,11 +18,15 @@ public class SellerEntity {
 	private String firstName;
 	private String lastName;
 	private String contactNo;
+	
+	@Column(unique = true)
 	private String email;
+	
 	private String address;
 	private String password;
 	
-	@OneToMany(mappedBy = "seller")
+	@OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true) // ensures that when a seller is deleted, all associated products will also be deleted
+	@JsonManagedReference
     private List<ProductEntity> products;
 	
 	private String profilePhoto;

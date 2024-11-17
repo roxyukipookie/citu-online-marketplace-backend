@@ -14,6 +14,7 @@ import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -40,12 +41,28 @@ public class SellerController {
 	@Autowired
 	private SellerService sellerService;
 	
-	private static final String UPLOAD_DIR = "C:/Users/Users/chriz/Downloads/"; // path to save the images
+	private static final String UPLOAD_DIR = "C:/Users/Lloyd/Documents/Karen/profile-images"; // path to save the images
+	
+	/*
+	private static final String UPLOAD_DIR = "C:/Users/Users/chriz/Downloads/";
+	*/
 
 	//CREATE
 	@PostMapping("/postSellerRecord")
-	public SellerEntity postSellerRecord(@RequestBody SellerEntity seller) throws NameAlreadyBoundException {
-		return sellerService.postSellerRecord(seller);
+	public ResponseEntity<?> postSellerRecord(@RequestBody SellerEntity seller) throws NameAlreadyBoundException {
+		if (seller.getUsername().isEmpty() || seller.getPassword().isEmpty() || seller.getFirstName().isEmpty() || seller.getLastName().isEmpty() || seller.getAddress().isEmpty() || seller.getContactNo().isEmpty() || seller.getEmail().isEmpty()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "All fields are required"));
+		} else if (seller.getPassword().length() < 8) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Password must be at least 8 characters long"));
+	    }
+		
+		try {
+	        SellerEntity savedSeller = sellerService.postSellerRecord(seller);
+	        return ResponseEntity.ok(savedSeller);
+	    } catch (NameAlreadyBoundException e) {
+	        return ResponseEntity.status(HttpStatus.CONFLICT)
+	                             .body(Map.of("message", e.getMessage()));
+	    }
 	}
 		
 	@PostMapping("login")

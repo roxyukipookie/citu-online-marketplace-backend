@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,33 +37,75 @@ public class ProductController {
 	@Autowired
 	ProductService pserv;
 	
-	private static final String UPLOAD_DIR = "C:/Users/chriz/Downloads/";
+	private static final String UPLOAD_DIR = "C:\\\\Users\\\\Lloyd\\\\Downloads"; //C:/Users/chriz/Downloads/
 	
 	@GetMapping("/print")
 	public String print() {
 		return "Mic Test 1 2 3, Check Mic Test";
 	}
 	
-	//get products by seller
+	//get products by logged in seller
 	@GetMapping("/getProductsBySeller/{username}")
-	public ResponseEntity<List<ProductEntity>> getProductsBySeller(@PathVariable String username) {
+	public ResponseEntity<List<Map<String, Object>>> getProductsBySeller(@PathVariable String username) {
 	    List<ProductEntity> products = pserv.getProductsBySeller(username);
-	    if (products.isEmpty()) {
-	        return ResponseEntity.notFound().build();
-	    }
-	    return ResponseEntity.ok(products);
+	    
+	    List<Map<String, Object>> response = new ArrayList<>();
+	    for (ProductEntity product : products) {
+			Map<String, Object> productData = new HashMap<>();
+		    productData.put("code", product.getCode());
+		    productData.put("name", product.getName());
+		    productData.put("qtyInStock", product.getQtyInStock());
+		    productData.put("pdtDescription", product.getPdtDescription());
+		    productData.put("buyPrice", product.getBuyPrice());
+		    productData.put("imagePath", product.getImagePath());
+		        
+		    // Get seller's username
+		    if (product.getSeller() != null) {
+		    	productData.put("sellerUsername", product.getSeller().getUsername());
+		    }
+
+		    response.add(productData);
+		}
+		    
+		if (response.isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
-	
-	//Create of CRUD
-	/*@PostMapping("/postproduct")
-	public ProductEntity postProduct(@RequestBody ProductEntity productentity) {
-		return pserv.postProduct(productentity);
-	}*/
+	//fetches only the products where the seller's username does not match the logged-in seller's username 
+	@GetMapping("/getAllProducts/{username}")
+	public ResponseEntity<List<Map<String, Object>>> getAllProducts(@PathVariable String username) {
+		List<ProductEntity> products = pserv.getAllProducts(username);
+		    
+		List<Map<String, Object>> response = new ArrayList<>();
+		for (ProductEntity product : products) {
+			Map<String, Object> productData = new HashMap<>();
+		    productData.put("code", product.getCode());
+		    productData.put("name", product.getName());
+		    productData.put("pdtDescription", product.getPdtDescription());
+		    productData.put("buyPrice", product.getBuyPrice());
+		    productData.put("imagePath", product.getImagePath());
+		        
+		    // Get seller's username
+		    if (product.getSeller() != null) {
+		    	productData.put("sellerUsername", product.getSeller().getUsername());
+		    }
+
+		    response.add(productData);
+		}
+		    
+		if (response.isEmpty()) {
+			return ResponseEntity.noContent().build();
+		}
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 	
 	@PostMapping("/postproduct")
 	public ResponseEntity<String> postProduct(
-            @RequestParam("name") String name,
+			@RequestParam("name") String name,
             @RequestParam("pdtDescription") String description,
             @RequestParam("qtyInStock") int quantity,
             @RequestParam("buyPrice") float price,
@@ -69,8 +114,8 @@ public class ProductController {
             @RequestParam("status") String status,
             @RequestParam("conditionType") String conditionType,
             @RequestParam("seller_username") String sellerUsername) {  // Accept seller username
-        
-        // Save the image
+		
+		// Save the image
         if (image.isEmpty()) {
             return new ResponseEntity<>("Image file not found!", HttpStatus.BAD_REQUEST);
         }
@@ -93,14 +138,6 @@ public class ProductController {
         return new ResponseEntity<>("Product added successfully with image path", HttpStatus.OK);
     }
 
-	
-	//Read of CRUD
-	@GetMapping("/getAllProducts")
-	public List<ProductEntity> getAllProducts(){
-		List<ProductEntity> products = pserv.getAllProducts();
-	    return products;
-	}
-	
 	@GetMapping("/getProductByCode/{code}")
     public ResponseEntity<ProductEntity> getProductByCode(@PathVariable int code) {
         ProductEntity product = pserv.getProductByCode(code);

@@ -20,12 +20,21 @@ public class SellerService {
 	public SellerService() {
 		super();
 	}
+	
+	public boolean isEmailExists(String email) {
+        return sellerRepo.existsByEmail(email);
+    }
 
 	//CREATE
 	public SellerEntity postSellerRecord(SellerEntity seller) throws NameAlreadyBoundException {
 		if(sellerRepo.existsById(seller.getUsername())) {
 			throw new NameAlreadyBoundException("Username " + seller.getUsername() + " is already taken. Input another username.");
 		}
+		
+		if (isEmailExists(seller.getEmail())) {
+            throw new NameAlreadyBoundException("Email already exists");
+        }
+		
 		return sellerRepo.save(seller);
 	}
 	

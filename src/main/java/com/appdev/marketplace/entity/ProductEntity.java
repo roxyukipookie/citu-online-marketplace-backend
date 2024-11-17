@@ -1,6 +1,10 @@
 package com.appdev.marketplace.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,8 +28,9 @@ public class ProductEntity {
     private String status;
     private String conditionType;
     
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "seller_username", nullable = false)
+    @JsonBackReference
     private SellerEntity seller;
 
     public ProductEntity() {
