@@ -1,11 +1,13 @@
 package com.appdev.marketplace.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import com.appdev.marketplace.entity.ProductEntity;
 import com.appdev.marketplace.entity.SellerEntity;
 import com.appdev.marketplace.repository.ProductRepo;
 import com.appdev.marketplace.repository.SellerRepository;
+import com.appdev.marketplace.specifications.ProductSpecifications;
 
 import jakarta.transaction.Transactional;
 
@@ -69,6 +71,15 @@ public class ProductService {
 	public ProductEntity getProductByCode(int code) {
         Optional<ProductEntity> product = prepo.findById(code);
         return product.orElse(null); 
+    }
+	
+	public List<ProductEntity> getFilteredProducts(String category, String status, String conditionType) {
+        Specification<ProductEntity> spec = Specification
+                .where(ProductSpecifications.hasCategory(category))
+                .and(ProductSpecifications.hasStatus(status))
+                .and(ProductSpecifications.hasConditionType(conditionType));
+        
+        return prepo.findAll(spec);
     }
 	
 	//Update of CRUD

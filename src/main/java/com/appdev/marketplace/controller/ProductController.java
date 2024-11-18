@@ -103,6 +103,16 @@ public class ProductController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
+	 @GetMapping("/getAllProductsFilter/{username}")
+	    public List<ProductEntity> getAllProductsFilter(
+	        @PathVariable String username,
+	        @RequestParam(required = false) String category,
+	        @RequestParam(required = false) String status,
+	        @RequestParam(required = false) String conditionType
+	    ) {
+	        return pserv.getFilteredProducts(category, status, conditionType);
+	    }
+	
 	@PostMapping("/postproduct")
 	public ResponseEntity<String> postProduct(
 			@RequestParam("name") String name,

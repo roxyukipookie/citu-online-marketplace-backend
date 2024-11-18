@@ -3,6 +3,7 @@ package com.appdev.marketplace.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
@@ -24,5 +25,5 @@ public interface ProductRepo extends JpaRepository<ProductEntity, Integer>{
     
     public List<ProductEntity> findBySellerUsername(String sellerUsername);
     public List<ProductEntity> findBySellerUsernameNot(String username);
-	
+    public List<ProductEntity> findAll(Specification<ProductEntity> spec);
 }
