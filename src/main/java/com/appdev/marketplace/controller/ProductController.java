@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -103,15 +105,36 @@ public class ProductController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
-	 @GetMapping("/getAllProductsFilter/{username}")
-	    public List<ProductEntity> getAllProductsFilter(
-	        @PathVariable String username,
-	        @RequestParam(required = false) String category,
-	        @RequestParam(required = false) String status,
-	        @RequestParam(required = false) String conditionType
-	    ) {
-	        return pserv.getFilteredProducts(category, status, conditionType);
-	    }
+	//Filtering Products
+	@GetMapping("/getAllProductsFilter/{username}")
+	public ResponseEntity<List<Map<String, Object>>> getAllProductsFilter(
+	    @PathVariable String username,
+	    @RequestParam(required = false) String category,
+	    @RequestParam(required = false) String status,
+	    @RequestParam(required = false) String conditionType
+	) {
+	    // Fetch products based on filters (excluding username as a filter)
+	    List<ProductEntity> products = pserv.getFilteredProducts(category, status, conditionType);
+
+	    // Build a custom response including seller's username
+	    List<Map<String, Object>> response = products.stream().map(product -> {
+	        Map<String, Object> productData = new HashMap<>();
+	        productData.put("code", product.getCode());
+	        productData.put("name", product.getName());
+	        productData.put("pdtDescription", product.getPdtDescription());
+	        productData.put("buyPrice", product.getBuyPrice());
+	        productData.put("imagePath", product.getImagePath());
+
+	        // Include seller's username if available
+	        Optional.ofNullable(product.getSeller())
+	                .ifPresent(seller -> productData.put("sellerUsername", seller.getUsername()));
+
+	        return productData;
+	    }).collect(Collectors.toList());
+
+	    // Return response
+	    return response.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(response);
+	}
 	
 	@PostMapping("/postproduct")
 	public ResponseEntity<String> postProduct(
@@ -158,11 +181,6 @@ public class ProductController {
         }
     }
 	
-	//Update of CRUD
-	/*@PutMapping("/putProductDetails/{code}")
-	public ProductEntity putProductDetails(@PathVariable  int code, @RequestBody ProductEntity newProductEntity) {
-		return pserv.putProductDetails(code, newProductEntity);
-	}*/
 	
 	@PutMapping("/putProductDetails/{code}")
 	public ProductEntity putProductDetails(
