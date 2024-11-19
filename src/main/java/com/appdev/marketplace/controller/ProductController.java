@@ -2,6 +2,7 @@ package com.appdev.marketplace.controller;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -188,16 +189,33 @@ public class ProductController {
 	    @RequestPart("product") ProductEntity newProductEntity, 
 	    @RequestPart(value = "imagePath", required = false) MultipartFile imageFile 
 	) {
-	    // Handle image file
+	    // Check if an image file is provided
 	    if (imageFile != null && !imageFile.isEmpty()) {
-	        String fileName = imageFile.getOriginalFilename();
-	        System.out.println("Image file received: " + fileName);
+	        try {
+	            // Define the directory and file path where the image will be saved
+	            String uploadDir = "uploads/";
+	            String fileName = imageFile.getOriginalFilename();
+	            Path filePath = Paths.get(uploadDir, fileName);
+
+	            // Ensure the directory exists
+	            Files.createDirectories(filePath.getParent());
+
+	            // Save the file to the specified path
+	            Files.write(filePath, imageFile.getBytes());
+
+	            // Set the image path in newProductEntity
+	            newProductEntity.setImagePath(filePath.toString());
+
+	            System.out.println("Image file saved: " + filePath);
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	            throw new RuntimeException("Failed to save the image file.");
+	        }
 	    }
 
-	    // Handle updating the product entity
+	    // Call the service to update other product details
 	    return pserv.putProductDetails(code, newProductEntity);
 	}
-
 	
 	//Delete of CRUD
 	@DeleteMapping("deleteProduct/{code}")
