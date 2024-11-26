@@ -50,60 +50,77 @@ public class ProductController {
 	//get products by logged in seller
 	@GetMapping("/getProductsBySeller/{username}")
 	public ResponseEntity<List<Map<String, Object>>> getProductsBySeller(@PathVariable String username) {
-	    List<ProductEntity> products = pserv.getProductsBySeller(username);
-	    
-	    List<Map<String, Object>> response = new ArrayList<>();
-	    for (ProductEntity product : products) {
-			Map<String, Object> productData = new HashMap<>();
-		    productData.put("code", product.getCode());
-		    productData.put("name", product.getName());
-		    productData.put("qtyInStock", product.getQtyInStock());
-		    productData.put("pdtDescription", product.getPdtDescription());
-		    productData.put("buyPrice", product.getBuyPrice());
-		    productData.put("imagePath", product.getImagePath());
-		        
-		    // Get seller's username
-		    if (product.getSeller() != null) {
-		    	productData.put("sellerUsername", product.getSeller().getUsername());
-		    }
-
-		    response.add(productData);
-		}
+		try {
+			List<ProductEntity> products = pserv.getProductsBySeller(username);
 		    
-		if (response.isEmpty()) {
-			return ResponseEntity.noContent().build();
-		}
+		    List<Map<String, Object>> response = new ArrayList<>();
+		    for (ProductEntity product : products) {
+				Map<String, Object> productData = new HashMap<>();
+			    productData.put("code", product.getCode());
+			    productData.put("name", product.getName());
+			    productData.put("qtyInStock", product.getQtyInStock());
+			    productData.put("pdtDescription", product.getPdtDescription());
+			    productData.put("buyPrice", product.getBuyPrice());
+			    productData.put("imagePath", product.getImagePath());
+			        
+			    // Get seller's username
+			    if (product.getSeller() != null) {
+			    	productData.put("sellerUsername", product.getSeller().getUsername());
+			    }
 
-		return new ResponseEntity<>(response, HttpStatus.OK);
+			    response.add(productData);
+			}
+		    
+		    if (response.isEmpty()) {
+		    	System.out.println("No products found for seller: " + username);
+				return ResponseEntity.noContent().build();
+			}
+		    
+		    return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch(NoSuchElementException ex) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		} catch (Exception ex) {
+	        System.err.println("An error occurred while retrieving products: " + ex.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	    }
 	}
 	
 	//fetches only the products where the seller's username does not match the logged-in seller's username 
 	@GetMapping("/getAllProducts/{username}")
 	public ResponseEntity<List<Map<String, Object>>> getAllProducts(@PathVariable String username) {
-		List<ProductEntity> products = pserv.getAllProducts(username);
+		try {
+			List<ProductEntity> products = pserv.getAllProducts(username);
 		    
-		List<Map<String, Object>> response = new ArrayList<>();
-		for (ProductEntity product : products) {
-			Map<String, Object> productData = new HashMap<>();
-		    productData.put("code", product.getCode());
-		    productData.put("name", product.getName());
-		    productData.put("pdtDescription", product.getPdtDescription());
-		    productData.put("buyPrice", product.getBuyPrice());
-		    productData.put("imagePath", product.getImagePath());
-		        
-		    // Get seller's username
-		    if (product.getSeller() != null) {
-		    	productData.put("sellerUsername", product.getSeller().getUsername());
-		    }
+			List<Map<String, Object>> response = new ArrayList<>();
+			for (ProductEntity product : products) {
+				Map<String, Object> productData = new HashMap<>();
+			    productData.put("code", product.getCode());
+			    productData.put("name", product.getName());
+			    productData.put("pdtDescription", product.getPdtDescription());
+			    productData.put("buyPrice", product.getBuyPrice());
+			    productData.put("imagePath", product.getImagePath());
+			        
+			    // Get seller's username
+			    if (product.getSeller() != null) {
+			    	productData.put("sellerUsername", product.getSeller().getUsername());
+			    }
 
-		    response.add(productData);
-		}
-		    
-		if (response.isEmpty()) {
-			return ResponseEntity.noContent().build();
-		}
+			    response.add(productData);
+			}
+			    
+			if (response.isEmpty()) {
+				return ResponseEntity.noContent().build();
+			}
 
-		return new ResponseEntity<>(response, HttpStatus.OK);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		} catch(NoSuchElementException ex) {
+			System.err.println("No products found for seller: " + username);
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); 
+		} catch(Exception ex) {
+			System.err.println("An error occurred while retrieving products: " + ex.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); 
+		}
+		
 	}
 	
 	//Filtering Products
