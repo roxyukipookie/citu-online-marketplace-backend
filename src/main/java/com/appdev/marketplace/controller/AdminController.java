@@ -132,4 +132,9 @@ public class AdminController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    
+    @GetMapping("/products-with-sellers")
+    public ResponseEntity<List<Map<String, Object>>> getProductsWithSellers() {
+        return ResponseEntity.ok(adminService.getAllProductsWithSellers());
+    }
 }
