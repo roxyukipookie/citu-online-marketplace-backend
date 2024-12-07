@@ -7,4 +7,5 @@ import com.appdev.marketplace.entity.SellerEntity;
 @Repository
 public interface SellerRepository extends JpaRepository<SellerEntity, String> {
 	boolean existsByEmail(String email);
+	//Optional<SellerEntity> findByUsername(String username);
 }

@@ -41,11 +41,8 @@ public class SellerController {
 	@Autowired
 	private SellerService sellerService;
 	
-	private static final String UPLOAD_DIR = "C:/Users/Lloyd/Documents/Karen/profile-images"; // path to save the images
+	private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/uploads"; // path to save the images
 	
-	/*
-	private static final String UPLOAD_DIR = "C:/Users/Users/chriz/Downloads/";
-	*/
 
 	//CREATE
 	@PostMapping("/postSellerRecord")

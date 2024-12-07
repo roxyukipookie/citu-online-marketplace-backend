@@ -44,7 +44,7 @@ public class SellerService {
 	}
 	
 	public SellerEntity getSellerByUsername(String username) throws NameNotFoundException {
-		return sellerRepo.findById(username).orElseThrow(() -> new NameNotFoundException("Seller with username: " + username + " not found."));
+		return sellerRepo.findById(username).orElseThrow(() -> new NameNotFoundException("getSellerByUsername Seller with username: " + username + " not found."));
 	}
 	
 	//UPDATE

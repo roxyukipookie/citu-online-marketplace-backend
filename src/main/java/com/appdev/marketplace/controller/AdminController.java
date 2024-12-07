@@ -6,10 +6,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.appdev.marketplace.dto.ChangePassword;
+import com.appdev.marketplace.dto.Login;
+import com.appdev.marketplace.entity.AdminEntity;
 import com.appdev.marketplace.entity.ProductEntity;
 import com.appdev.marketplace.entity.SellerEntity;
 import com.appdev.marketplace.service.AdminService;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -18,6 +23,26 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
+    
+    @PostMapping("login")
+	public ResponseEntity<Map<String, String>> login(@RequestBody Login loginRequest) {
+		String username = loginRequest.getUsername();
+		String password = loginRequest.getPassword();
+			
+		AdminEntity admin = adminService.authenticateAdmin(username, password);
+		if(admin != null) {
+			Map<String, String> response = new HashMap<>();
+			response.put("message", "Login Successful");
+			response.put("username", admin.getUsername());
+			response.put("password", admin.getPassword());
+			response.put("firstName", admin.getFirstname());
+			response.put("lastName", admin.getLastname());
+			response.put("contactNo", admin.getContactNo());
+			response.put("email", admin.getEmail());
+			return ResponseEntity.ok(response); 
+			} else 
+				return ResponseEntity.status(401).body(null);
+	}
 
     @GetMapping("/products")
     public List<ProductEntity> viewAllProducts() {

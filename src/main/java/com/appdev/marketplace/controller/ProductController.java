@@ -40,7 +40,7 @@ public class ProductController {
 	@Autowired
 	ProductService pserv;
 	
-	private static final String UPLOAD_DIR = "C:\\\\Users\\\\Lloyd\\\\Downloads"; //C:/Users/chriz/Downloads/
+	private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/"; //C:/Users/chriz/Downloads/
 	
 	@GetMapping("/print")
 	public String print() {
@@ -48,196 +48,196 @@ public class ProductController {
 	}
 	
 	//get products by logged in seller
-	@GetMapping("/getProductsBySeller/{username}")
-	public ResponseEntity<List<Map<String, Object>>> getProductsBySeller(@PathVariable String username) {
-		try {
-			List<ProductEntity> products = pserv.getProductsBySeller(username);
-		    
-		    List<Map<String, Object>> response = new ArrayList<>();
-		    for (ProductEntity product : products) {
-				Map<String, Object> productData = new HashMap<>();
-			    productData.put("code", product.getCode());
-			    productData.put("name", product.getName());
-			    productData.put("qtyInStock", product.getQtyInStock());
-			    productData.put("pdtDescription", product.getPdtDescription());
-			    productData.put("buyPrice", product.getBuyPrice());
-			    productData.put("imagePath", product.getImagePath());
-			        
-			    // Get seller's username
-			    if (product.getSeller() != null) {
-			    	productData.put("sellerUsername", product.getSeller().getUsername());
-			    }
-
-			    response.add(productData);
-			}
-		    
-		    if (response.isEmpty()) {
-		    	System.out.println("No products found for seller: " + username);
-				return ResponseEntity.noContent().build();
-			}
-		    
-		    return new ResponseEntity<>(response, HttpStatus.OK);
-		} catch(NoSuchElementException ex) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-		} catch (Exception ex) {
-	        System.err.println("An error occurred while retrieving products: " + ex.getMessage());
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-	    }
-	}
-	
-	//fetches only the products where the seller's username does not match the logged-in seller's username 
-	@GetMapping("/getAllProducts/{username}")
-	public ResponseEntity<List<Map<String, Object>>> getAllProducts(@PathVariable String username) {
-		try {
-			List<ProductEntity> products = pserv.getAllProducts(username);
-		    
-			List<Map<String, Object>> response = new ArrayList<>();
-			for (ProductEntity product : products) {
-				Map<String, Object> productData = new HashMap<>();
-			    productData.put("code", product.getCode());
-			    productData.put("name", product.getName());
-			    productData.put("pdtDescription", product.getPdtDescription());
-			    productData.put("buyPrice", product.getBuyPrice());
-			    productData.put("imagePath", product.getImagePath());
-			        
-			    // Get seller's username
-			    if (product.getSeller() != null) {
-			    	productData.put("sellerUsername", product.getSeller().getUsername());
-			    }
-
-			    response.add(productData);
-			}
+		@GetMapping("/getProductsBySeller/{username}")
+		public ResponseEntity<List<Map<String, Object>>> getProductsBySeller(@PathVariable String username) {
+			try {
+				List<ProductEntity> products = pserv.getProductsBySeller(username);
 			    
-			if (response.isEmpty()) {
-				return ResponseEntity.noContent().build();
-			}
+			    List<Map<String, Object>> response = new ArrayList<>();
+			    for (ProductEntity product : products) {
+					Map<String, Object> productData = new HashMap<>();
+				    productData.put("code", product.getCode());
+				    productData.put("name", product.getName());
+				    productData.put("qtyInStock", product.getQtyInStock());
+				    productData.put("pdtDescription", product.getPdtDescription());
+				    productData.put("buyPrice", product.getBuyPrice());
+				    productData.put("imagePath", product.getImagePath());
+				        
+				    // Get seller's username
+				    if (product.getSeller() != null) {
+				    	productData.put("sellerUsername", product.getSeller().getUsername());
+				    }
 
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		} catch(NoSuchElementException ex) {
-			System.err.println("No products found for seller: " + username);
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); 
-		} catch(Exception ex) {
-			System.err.println("An error occurred while retrieving products: " + ex.getMessage());
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); 
+				    response.add(productData);
+				}
+			    
+			    if (response.isEmpty()) {
+			    	System.out.println("No products found for seller: " + username);
+					return ResponseEntity.noContent().build();
+				}
+			    
+			    return new ResponseEntity<>(response, HttpStatus.OK);
+			} catch(NoSuchElementException ex) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+			} catch (Exception ex) {
+		        System.err.println("An error occurred while retrieving products: " + ex.getMessage());
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		    }
 		}
 		
-	}
-	
-	//Filtering Products
-	@GetMapping("/getAllProductsFilter/{username}")
-	public ResponseEntity<List<Map<String, Object>>> getAllProductsFilter(
-	    @PathVariable String username,
-	    @RequestParam(required = false) String category,
-	    @RequestParam(required = false) String status,
-	    @RequestParam(required = false) String conditionType
-	) {
-	    // Fetch products based on filters (excluding username as a filter)
-	    List<ProductEntity> products = pserv.getFilteredProducts(category, status, conditionType);
+		//fetches only the products where the seller's username does not match the logged-in seller's username 
+		@GetMapping("/getAllProducts/{username}")
+		public ResponseEntity<List<Map<String, Object>>> getAllProducts(@PathVariable String username) {
+			try {
+				List<ProductEntity> products = pserv.getAllProducts(username);
+			    
+				List<Map<String, Object>> response = new ArrayList<>();
+				for (ProductEntity product : products) {
+					Map<String, Object> productData = new HashMap<>();
+				    productData.put("code", product.getCode());
+				    productData.put("name", product.getName());
+				    productData.put("pdtDescription", product.getPdtDescription());
+				    productData.put("buyPrice", product.getBuyPrice());
+				    productData.put("imagePath", product.getImagePath());
+				        
+				    // Get seller's username
+				    if (product.getSeller() != null) {
+				    	productData.put("sellerUsername", product.getSeller().getUsername());
+				    }
 
-	    // Build a custom response including seller's username
-	    List<Map<String, Object>> response = products.stream().map(product -> {
-	        Map<String, Object> productData = new HashMap<>();
-	        productData.put("code", product.getCode());
-	        productData.put("name", product.getName());
-	        productData.put("pdtDescription", product.getPdtDescription());
-	        productData.put("buyPrice", product.getBuyPrice());
-	        productData.put("imagePath", product.getImagePath());
+				    response.add(productData);
+				}
+				    
+				if (response.isEmpty()) {
+					return ResponseEntity.noContent().build();
+				}
 
-	        // Include seller's username if available
-	        Optional.ofNullable(product.getSeller())
-	                .ifPresent(seller -> productData.put("sellerUsername", seller.getUsername()));
-
-	        return productData;
-	    }).collect(Collectors.toList());
-
-	    // Return response
-	    return response.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(response);
-	}
-	
-	@PostMapping("/postproduct")
-	public ResponseEntity<String> postProduct(
-			@RequestParam("name") String name,
-            @RequestParam("pdtDescription") String description,
-            @RequestParam("qtyInStock") int quantity,
-            @RequestParam("buyPrice") float price,
-            @RequestParam("image") MultipartFile image,
-            @RequestParam("category") String category,
-            @RequestParam("status") String status,
-            @RequestParam("conditionType") String conditionType,
-            @RequestParam("seller_username") String sellerUsername) {  // Accept seller username
+				return new ResponseEntity<>(response, HttpStatus.OK);
+			} catch(NoSuchElementException ex) {
+				System.err.println("No products found for seller: " + username);
+		        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); 
+			} catch(Exception ex) {
+				System.err.println("An error occurred while retrieving products: " + ex.getMessage());
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); 
+			}
+			
+		}
 		
-		// Save the image
-        if (image.isEmpty()) {
-            return new ResponseEntity<>("Image file not found!", HttpStatus.BAD_REQUEST);
-        }
-        File uploadDir = new File(UPLOAD_DIR + "uploads");
-        if (!uploadDir.exists()) uploadDir.mkdirs();
-        String imagePath = "uploads/" + image.getOriginalFilename();
-        try {
-            Files.copy(image.getInputStream(), Paths.get(UPLOAD_DIR + imagePath), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            return new ResponseEntity<>("Error saving image!", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        
-        // Call the service method to save product with associated seller
-        try {
-            pserv.postProduct(name, description, quantity, price, imagePath, category, status, conditionType, sellerUsername);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+		//Filtering Products
+		@GetMapping("/getAllProductsFilter/{username}")
+		public ResponseEntity<List<Map<String, Object>>> getAllProductsFilter(
+		    @PathVariable String username,
+		    @RequestParam(required = false) String category,
+		    @RequestParam(required = false) String status,
+		    @RequestParam(required = false) String conditionType
+		) {
+		    // Fetch products based on filters (excluding username as a filter)
+		    List<ProductEntity> products = pserv.getFilteredProducts(category, status, conditionType);
 
-        return new ResponseEntity<>("Product added successfully with image path", HttpStatus.OK);
-    }
+		    // Build a custom response including seller's username
+		    List<Map<String, Object>> response = products.stream().map(product -> {
+		        Map<String, Object> productData = new HashMap<>();
+		        productData.put("code", product.getCode());
+		        productData.put("name", product.getName());
+		        productData.put("pdtDescription", product.getPdtDescription());
+		        productData.put("buyPrice", product.getBuyPrice());
+		        productData.put("imagePath", product.getImagePath());
 
-	@GetMapping("/getProductByCode/{code}")
-    public ResponseEntity<ProductEntity> getProductByCode(@PathVariable int code) {
-        ProductEntity product = pserv.getProductByCode(code);
-        if (product != null) {
-            return ResponseEntity.ok(product);
-        } else {
-            return ResponseEntity.notFound().build(); 
-        }
-    }
-	
-	
-	@PutMapping("/putProductDetails/{code}")
-	public ProductEntity putProductDetails(
-	    @PathVariable int code,
-	    @RequestPart("product") ProductEntity newProductEntity, 
-	    @RequestPart(value = "imagePath", required = false) MultipartFile imageFile 
-	) {
-	    // Check if an image file is provided
-	    if (imageFile != null && !imageFile.isEmpty()) {
-	        try {
-	            // Define the directory and file path where the image will be saved
-	            String uploadDir = "uploads/";
-	            String fileName = imageFile.getOriginalFilename();
-	            Path filePath = Paths.get(uploadDir, fileName);
+		        // Include seller's username if available
+		        Optional.ofNullable(product.getSeller())
+		                .ifPresent(seller -> productData.put("sellerUsername", seller.getUsername()));
 
-	            // Ensure the directory exists
-	            Files.createDirectories(filePath.getParent());
+		        return productData;
+		    }).collect(Collectors.toList());
 
-	            // Save the file to the specified path
-	            Files.write(filePath, imageFile.getBytes());
-
-	            // Set the image path in newProductEntity
-	            newProductEntity.setImagePath(filePath.toString());
-
-	            System.out.println("Image file saved: " + filePath);
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	            throw new RuntimeException("Failed to save the image file.");
+		    // Return response
+		    return response.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(response);
+		}
+		
+		@PostMapping("/postproduct")
+		public ResponseEntity<String> postProduct(
+				@RequestParam("name") String name,
+	            @RequestParam("pdtDescription") String description,
+	            @RequestParam("qtyInStock") int quantity,
+	            @RequestParam("buyPrice") float price,
+	            @RequestParam("image") MultipartFile image,
+	            @RequestParam("category") String category,
+	            @RequestParam("status") String status,
+	            @RequestParam("conditionType") String conditionType,
+	            @RequestParam("seller_username") String sellerUsername) {  // Accept seller username
+			
+			// Save the image
+	        if (image.isEmpty()) {
+	            return new ResponseEntity<>("Image file not found!", HttpStatus.BAD_REQUEST);
 	        }
+	        File uploadDir = new File(UPLOAD_DIR + "uploads");
+	        if (!uploadDir.exists()) uploadDir.mkdirs();
+	        String imagePath = "uploads/" + image.getOriginalFilename();
+	        try {
+	            Files.copy(image.getInputStream(), Paths.get(UPLOAD_DIR + imagePath), StandardCopyOption.REPLACE_EXISTING);
+	        } catch (IOException e) {
+	            return new ResponseEntity<>("Error saving image!", HttpStatus.INTERNAL_SERVER_ERROR);
+	        }
+	        
+	        // Call the service method to save product with associated seller
+	        try {
+	            pserv.postProduct(name, description, quantity, price, imagePath, category, status, conditionType, sellerUsername);
+	        } catch (NoSuchElementException e) {
+	            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+	        }
+
+	        return new ResponseEntity<>("Product added successfully with image path", HttpStatus.OK);
 	    }
 
-	    // Call the service to update other product details
-	    return pserv.putProductDetails(code, newProductEntity);
-	}
-	
-	//Delete of CRUD
-	@DeleteMapping("deleteProduct/{code}")
-	public String deleteProduc(@PathVariable int code) {
-		return pserv.deleteProduct(code);
-	}
+		@GetMapping("/getProductByCode/{code}")
+	    public ResponseEntity<ProductEntity> getProductByCode(@PathVariable int code) {
+	        ProductEntity product = pserv.getProductByCode(code);
+	        if (product != null) {
+	            return ResponseEntity.ok(product);
+	        } else {
+	            return ResponseEntity.notFound().build(); 
+	        }
+	    }
+		
+		
+		@PutMapping("/putProductDetails/{code}")
+		public ProductEntity putProductDetails(
+		    @PathVariable int code,
+		    @RequestPart("product") ProductEntity newProductEntity, 
+		    @RequestPart(value = "imagePath", required = false) MultipartFile imageFile 
+		) {
+		    // Check if an image file is provided
+		    if (imageFile != null && !imageFile.isEmpty()) {
+		        try {
+		            // Define the directory and file path where the image will be saved
+		            String uploadDir = "uploads/";
+		            String fileName = imageFile.getOriginalFilename();
+		            Path filePath = Paths.get(uploadDir, fileName);
+
+		            // Ensure the directory exists
+		            Files.createDirectories(filePath.getParent());
+
+		            // Save the file to the specified path
+		            Files.write(filePath, imageFile.getBytes());
+
+		            // Set the image path in newProductEntity
+		            newProductEntity.setImagePath(filePath.toString());
+
+		            System.out.println("Image file saved: " + filePath);
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		            throw new RuntimeException("Failed to save the image file.");
+		        }
+		    }
+
+		    // Call the service to update other product details
+		    return pserv.putProductDetails(code, newProductEntity);
+		}
+		
+		//Delete of CRUD
+		@DeleteMapping("deleteProduct/{code}")
+		public String deleteProduc(@PathVariable int code) {
+			return pserv.deleteProduct(code);
+		}
 }
 

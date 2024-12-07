@@ -28,6 +28,38 @@ public class AdminService {
     
     @Autowired
     private SellerRepository sellerRepo;
+    
+    public AdminEntity authenticateAdmin(String username, String password) {
+        try {
+            System.out.println("Attempting to authenticate admin: " + username);
+            
+            // Attempt to find the admin by username
+            AdminEntity admin = adminRepo.findByUsername(username).orElseThrow(() -> {
+                System.out.println("Admin not found. Please register.");
+                return new NoSuchElementException("Admin not found. Please register.");
+            });
+            
+            System.out.println("Retrieved admin: " + admin.getUsername() + ", Password: " + admin.getPassword());
+            
+            // Check if the password matches
+            if (admin.getPassword().equals(password)) {
+                return admin; // Authentication successful
+            } else {
+                System.out.println("Password does not match.");
+                throw new RuntimeException("Invalid password");
+            }
+        } catch (NoSuchElementException e) {
+            System.err.println("Error: " + e.getMessage());
+            throw e; // Re-throwing the exception to propagate it if necessary
+        } catch (RuntimeException e) {
+            System.err.println("Authentication failed: " + e.getMessage());
+            throw e; // Re-throwing the exception to propagate it if necessary
+        } catch (Exception e) {
+            System.err.println("An unexpected error occurred: " + e.getMessage());
+            throw new RuntimeException("Unexpected error during authentication");
+        }
+    }
+
 
     // ========================= Admin Management =========================
 

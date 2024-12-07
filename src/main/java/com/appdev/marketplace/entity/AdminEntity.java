@@ -22,7 +22,7 @@ public class AdminEntity {
     @Column(name = "email", nullable= false, length = 100)
     private String email;
 
-    @Column(name = "contact_no", length = 11)
+	@Column(name = "contact_no", length = 11)
     private String contactNo;
 
     @Column(name = "password", nullable = false)
@@ -95,6 +95,14 @@ public class AdminEntity {
     public void setPassword(String password) {
         this.password = password;
     }
+    
+    public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
     public String getProfilePhoto() {
         return profilePhoto;

@@ -1,5 +1,6 @@
 package com.appdev.marketplace.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -18,21 +19,17 @@ public class SellerEntity {
 	private String firstName;
 	private String lastName;
 	private String contactNo;
-	
 	@Column(unique = true)
 	private String email;
-	
 	private String address;
 	private String password;
+	private String profilePhoto;
 	
 	@OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true) // ensures that when a seller is deleted, all associated products will also be deleted
 	@JsonManagedReference
     private List<ProductEntity> products;
 	
-	private String profilePhoto;
-
 	public SellerEntity() {
-		// TODO Auto-generated constructor stub
 		super();
 	}
 	
