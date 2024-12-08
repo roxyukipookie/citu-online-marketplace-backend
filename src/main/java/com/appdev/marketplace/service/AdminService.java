@@ -11,8 +11,13 @@ import com.appdev.marketplace.repository.AdminRepository;
 import com.appdev.marketplace.repository.ProductRepo;
 import com.appdev.marketplace.repository.SellerRepository;
 import jakarta.transaction.Transactional;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
 import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
 
@@ -118,6 +123,16 @@ public class AdminService {
     // View all products
     public List<ProductEntity> viewAllProducts() {
         return productRepo.findAll();
+    }
+    
+ // Retrieve all products with corresponding seller username
+    public List<Map<String, Object>> getAllProductsWithSellers() {
+        return productRepo.findAll().stream().map(product -> {
+            Map<String, Object> details = new HashMap<>();
+            details.put("product", product);
+            details.put("sellerUsername", product.getSeller() != null ? product.getSeller().getUsername() : "Unknown");
+            return details;
+        }).collect(Collectors.toList());
     }
 
     // Create a new product
