@@ -130,6 +130,7 @@ public class AdminService {
         return productRepo.findAll().stream()
             .map(product -> {
                 Map<String, Object> details = new HashMap<>();
+                details.put("product", product);
                 details.put("productName", product.getName());
                 details.put("productCode", product.getCode());
                 details.put("category", product.getCategory());
@@ -139,7 +140,7 @@ public class AdminService {
             })
             .collect(Collectors.toList());
     }
-
+    
     // Create a new product
     public ProductEntity createProduct(ProductEntity productEntity) {
         return productRepo.save(productEntity);
