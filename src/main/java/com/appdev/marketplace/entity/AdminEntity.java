@@ -64,20 +64,20 @@ public class AdminEntity {
         this.username = username;
     }
 
-    public String getFirstname() {
+    public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstName = firstname;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getLastname() {
+    public String getLastName() {
         return lastName;
     }
 
-    public void setLastname(String lastname) {
-        this.lastName = lastname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getContactNo() {

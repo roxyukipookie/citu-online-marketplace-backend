@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface AdminRepository extends JpaRepository<AdminEntity, Long> {
     // Find admin by username (useful for authentication or queries)
     Optional<AdminEntity> findByUsername(String username);
+    public void deleteByUsername(String username);
 
     // Check if an admin exists by username
     boolean existsByUsername(String username);

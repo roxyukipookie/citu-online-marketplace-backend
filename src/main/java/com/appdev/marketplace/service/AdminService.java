@@ -28,7 +28,7 @@ public class AdminService {
     
     @Autowired
     private SellerRepository sellerRepo;
-    
+   
     public AdminEntity authenticateAdmin(String username, String password) {
         try {
             System.out.println("Attempting to authenticate admin: " + username);
@@ -59,6 +59,24 @@ public class AdminService {
             throw new RuntimeException("Unexpected error during authentication");
         }
     }
+    
+  //UPDATE
+  	public AdminEntity putAdminDetails(String username, AdminEntity newAdminDetails) throws NameNotFoundException {
+  	    AdminEntity admin = adminRepo.findByUsername(username)
+  	        .orElseThrow(() -> new NameNotFoundException("Seller with username: " + username + " does not exist"));
+
+  	    if (newAdminDetails.getProfilePhoto() != null) {
+  	        System.out.println("Updated Profile Photo: " + newAdminDetails.getProfilePhoto()); // Add a log here
+  	    }
+  	    
+  	    //seller.setProfilePhoto(newSellerDetails.getProfilePhoto());
+  	    admin.setFirstName(newAdminDetails.getFirstName());
+  	    admin.setLastName(newAdminDetails.getLastName());
+  	    admin.setContactNo(newAdminDetails.getContactNo());
+  	    admin.setEmail(newAdminDetails.getEmail());
+
+  	    return adminRepo.save(admin);
+  	}
 
 
     // ========================= Admin Management =========================
@@ -82,15 +100,18 @@ public class AdminService {
         return adminRepo.save(adminEntity);
     }
 
-    // Delete an admin by ID
-    public String deleteAdmin(Long adminId) {
-        if (adminRepo.existsById(adminId)) {
-            adminRepo.deleteById(adminId);
-            return "Admin with ID " + adminId + " has been successfully deleted.";
-        } else {
-            throw new NoSuchElementException("Admin with ID " + adminId + " not found");
-        }
-    }
+    //DELETE ADMIN ACCOUNT
+  	public String deleteAdmin(String username) {
+  		String msg = "";
+  		if(adminRepo.findByUsername(username) != null) {
+  			adminRepo.deleteByUsername(username);
+  			msg = "Admin " + username + " successfully deleted";
+  		} else {
+  			msg = "Admin with username: " + username + " is not found";
+  		}
+  		
+  		return msg;
+  	}
 
     // ========================= Product Management =========================
 

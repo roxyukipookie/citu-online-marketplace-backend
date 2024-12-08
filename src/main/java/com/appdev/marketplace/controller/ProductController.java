@@ -163,8 +163,7 @@ public class ProductController {
 	            @RequestParam("image") MultipartFile image,
 	            @RequestParam("category") String category,
 	            @RequestParam("status") String status,
-	            @RequestParam("conditionType") String conditionType,
-	            @RequestParam("seller_username") String sellerUsername) {  // Accept seller username
+	            @RequestParam("conditionType") String conditionType,@RequestParam("seller_username") String sellerUsername) {  // Accept seller username
 			
 			// Save the image
 	        if (image.isEmpty()) {
