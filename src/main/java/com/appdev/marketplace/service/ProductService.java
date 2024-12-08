@@ -16,79 +16,81 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import javax.naming.NameNotFoundException;
- 
+
 @Service
 @Transactional
 public class ProductService {
-	
+
 	@Autowired
 	ProductRepo prepo;
+
+	@Autowired
+	private SellerRepository sellerRepo;
 	
 	@Autowired
-    private SellerRepository sellerRepo;
-	
+	private AdminService adminService;
+
 	public ProductService() {
 		super();
 	}
-	
-	//get products by logged in seller
-	public List<ProductEntity> getProductsBySeller(String sellerUsername) {
-	    return prepo.findBySellerUsername(sellerUsername);
-	}
-	
-	//fetches only the products where the seller's username does not match the logged-in seller's username 
-    public List<ProductEntity> getAllProducts(String username) {
-        List<ProductEntity> products = prepo.findBySellerUsernameNot(username);
-        return products;
-    }
-	
-	// Create a new product and associate it with a seller
-    public void postProduct(String name, String pdtDescription, int qtyInStock, float buyPrice, 
-                            String imagePath, String category, String status, String conditionType, 
-                            String sellerUsername) throws NoSuchElementException {
-        
-        // Find the seller by username
-        Optional<SellerEntity> sellerOpt = sellerRepo.findById(sellerUsername);
-        if (sellerOpt.isEmpty()) {
-            throw new NoSuchElementException("Seller with username " + sellerUsername + " not found");
-        }
-        
-        // Create a new product and associate it with the seller
-        ProductEntity productentity = new ProductEntity();
-        productentity.setName(name);
-        productentity.setPdtDescription(pdtDescription);
-        productentity.setQtyInStock(qtyInStock);
-        productentity.setBuyPrice(buyPrice);
-        productentity.setImagePath(imagePath);  
-        productentity.setCategory(category);
-        productentity.setStatus(status);
-        productentity.setConditionType(conditionType);
-        productentity.setSeller(sellerOpt.get());  // Associate with seller
 
-        prepo.save(productentity);  
-    }
-    
+	// get products by logged in seller
+	public List<ProductEntity> getProductsBySeller(String sellerUsername) {
+		return prepo.findBySellerUsername(sellerUsername);
+	}
+
+	// fetches only the products where the seller's username does not match the
+	// logged-in seller's username
+	public List<ProductEntity> getAllProducts(String username) {
+		List<ProductEntity> products = prepo.findBySellerUsernameNot(username);
+		return products;
+	}
+
+	// Create a new product and associate it with a seller
+	public void postProduct(String name, String pdtDescription, int qtyInStock, float buyPrice, String imagePath,
+			String category, String status, String conditionType, String sellerUsername) throws NoSuchElementException {
+
+		// Find the seller by username
+		Optional<SellerEntity> sellerOpt = sellerRepo.findById(sellerUsername);
+		if (sellerOpt.isEmpty()) {
+			throw new NoSuchElementException("Seller with username " + sellerUsername + " not found");
+		}
+
+		// Create a new product and associate it with the seller
+		ProductEntity productentity = new ProductEntity();
+		productentity.setName(name);
+		productentity.setPdtDescription(pdtDescription);
+		productentity.setQtyInStock(qtyInStock);
+		productentity.setBuyPrice(buyPrice);
+		productentity.setImagePath(imagePath);
+		productentity.setCategory(category);
+		productentity.setStatus(status);
+		productentity.setConditionType(conditionType);
+		productentity.setSeller(sellerOpt.get()); // Associate with seller
+
+		prepo.save(productentity);
+	}
+
 	public ProductEntity getProductByCode(int code) {
-        Optional<ProductEntity> product = prepo.findById(code);
-        return product.orElse(null); 
-    }
-	
+		Optional<ProductEntity> product = prepo.findById(code);
+		return product.orElse(null);
+	}
+
 	public List<ProductEntity> getFilteredProducts(String category, String status, String conditionType) {
-        Specification<ProductEntity> spec = Specification
-                .where(ProductSpecifications.hasCategory(category))
-                .and(ProductSpecifications.hasStatus(status))
-                .and(ProductSpecifications.hasConditionType(conditionType));
-        
-        return prepo.findAll(spec);
-    }
-	
-	//Update of CRUD
+		Specification<ProductEntity> spec = Specification.where(ProductSpecifications.hasCategory(category))
+				.and(ProductSpecifications.hasStatus(status))
+				.and(ProductSpecifications.hasConditionType(conditionType));
+
+		return prepo.findAll(spec);
+	}
+
+	// Update of CRUD
 	@SuppressWarnings("finally")
 	public ProductEntity putProductDetails(int code, ProductEntity newProductEntity) {
 		ProductEntity productentity = new ProductEntity();
 		try {
 			productentity = prepo.findByCode(code).get();
-			
+
 			productentity.setName(newProductEntity.getName());
 			productentity.setPdtDescription(newProductEntity.getPdtDescription());
 			productentity.setQtyInStock(newProductEntity.getQtyInStock());
@@ -96,23 +98,51 @@ public class ProductService {
 			productentity.setCategory(newProductEntity.getCategory());
 			productentity.setStatus(newProductEntity.getStatus());
 			productentity.setConditionType(newProductEntity.getConditionType());
-			
-		}catch(NoSuchElementException ex) {
-			throw new NameNotFoundException("Product "+code+" not found!");
-		}finally {
+
+		} catch (NoSuchElementException ex) {
+			throw new NameNotFoundException("Product " + code + " not found!");
+		} finally {
 			return prepo.save(productentity);
 		}
 	}
-	
-	//Delete of CRUD
+
+	// Delete of CRUD
 	public String deleteProduct(int code) {
-		String msg ="";
-		if(prepo.findByCode(code)!=null) {
+		String msg = "";
+		if (prepo.findByCode(code) != null) {
 			prepo.deleteByCode(code);
-			msg ="Product has been successfully deleted";
-		}else {
-			msg = code+"NOT found!";
+			msg = "Product has been successfully deleted";
+		} else {
+			msg = code + "NOT found!";
 		}
 		return msg;
 	}
+	
+	public List<ProductEntity> getApprovedProducts() {
+        return prepo.findByStatus("Approved");
+    }
+	
+	// Approve product
+    public void approveProduct(int code) throws Exception {
+        Optional<ProductEntity> productOpt = prepo.findById(code);
+        if (productOpt.isPresent()) {
+            ProductEntity product = productOpt.get();
+            product.setStatus("approved");  // Update status to "approved"
+            prepo.save(product);  // Save updated product
+        } else {
+            throw new NoSuchElementException("Product not found for approval.");
+        }
+    }
+
+    // Reject product
+    public void rejectProduct(int code) throws Exception {
+        Optional<ProductEntity> productOpt = prepo.findById(code);
+        if (productOpt.isPresent()) {
+            ProductEntity product = productOpt.get();
+            product.setStatus("rejected");  // Update status to "rejected"
+            prepo.save(product);  // Save updated product
+        } else {
+            throw new NoSuchElementException("Product not found for rejection.");
+        }
+    }
 }

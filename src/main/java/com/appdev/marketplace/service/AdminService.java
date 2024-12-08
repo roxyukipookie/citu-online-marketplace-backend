@@ -65,7 +65,7 @@ public class AdminService {
         }
     }
     
-  //UPDATE
+    //UPDATE
   	public AdminEntity putAdminDetails(String username, AdminEntity newAdminDetails) throws NameNotFoundException {
   	    AdminEntity admin = adminRepo.findByUsername(username)
   	        .orElseThrow(() -> new NameNotFoundException("Seller with username: " + username + " does not exist"));
@@ -82,7 +82,7 @@ public class AdminService {
 
   	    return adminRepo.save(admin);
   	}
-
+  	
 
     // ========================= Admin Management =========================
 
@@ -125,14 +125,19 @@ public class AdminService {
         return productRepo.findAll();
     }
     
- // Retrieve all products with corresponding seller username
+    // Retrieve all products with corresponding seller username
     public List<Map<String, Object>> getAllProductsWithSellers() {
-        return productRepo.findAll().stream().map(product -> {
-            Map<String, Object> details = new HashMap<>();
-            details.put("product", product);
-            details.put("sellerUsername", product.getSeller() != null ? product.getSeller().getUsername() : "Unknown");
-            return details;
-        }).collect(Collectors.toList());
+        return productRepo.findAll().stream()
+            .map(product -> {
+                Map<String, Object> details = new HashMap<>();
+                details.put("productName", product.getName());
+                details.put("productCode", product.getCode());
+                details.put("category", product.getCategory());
+                details.put("status", product.getStatus());
+                details.put("sellerUsername", product.getSeller() != null ? product.getSeller().getUsername() : "Unknown");
+                return details;
+            })
+            .collect(Collectors.toList());
     }
 
     // Create a new product

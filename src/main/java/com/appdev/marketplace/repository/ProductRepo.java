@@ -16,7 +16,7 @@ import jakarta.transaction.Transactional;
 public interface ProductRepo extends JpaRepository<ProductEntity, Integer>{
 	public ProductEntity findByName(String name);
 	public Optional<ProductEntity> findByCode(int code);
-	
+	List<ProductEntity> findByStatus(String status);
     //public void deleteByCode(int code);
 	
     @Modifying

@@ -25,7 +25,7 @@ public class ProductEntity {
     private float buyPrice;
     private String imagePath;  
     private String category;
-    private String status;
+    private String status; 
     private String conditionType;
     
     @ManyToOne(fetch = FetchType.EAGER)

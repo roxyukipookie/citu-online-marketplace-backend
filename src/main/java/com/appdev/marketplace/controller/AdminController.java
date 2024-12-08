@@ -91,30 +91,29 @@ public class AdminController {
 		return adminService.putAdminDetails(username, newAdminDetails);
 	}
     
-    //DELETE RECORD
   	@DeleteMapping("/deleteAdminRecord/{username}")
-  	public String deleteSeller(@PathVariable String username) {
+  	public String deleteAdmin(@PathVariable String username) {
   		return adminService.deleteAdmin(username);
   	}
   	
 
-    @GetMapping("/products")
+  	@GetMapping("/products")
     public List<ProductEntity> viewAllProducts() {
         return adminService.viewAllProducts();
     }
 
-    @PostMapping("/addproducts")
+  	@PostMapping("/addproducts")
     public String createProduct(@RequestBody ProductEntity productEntity) {
         adminService.createProduct(productEntity);
         return "Product created successfully.";
     }
 
-    @GetMapping("/products/{code}")
+  	@GetMapping("/products/{code}")
     public ProductEntity getProductByCode(@PathVariable int code) {
         return adminService.getProductByCode(code);
     }
 
-    @PutMapping("/editproducts/{code}")
+  	@PutMapping("/editproducts/{code}")
     public ProductEntity updateProduct(@PathVariable int code, @RequestBody ProductEntity updatedProduct) {
         return adminService.updateProduct(code, updatedProduct);
     }
@@ -125,7 +124,7 @@ public class AdminController {
     }
     
     
- // Seller Management Endpoints
+    // Seller Management Endpoints
 
     @PostMapping("/sellers")
     public ResponseEntity<String> createSeller(@RequestBody SellerEntity seller) {
@@ -167,6 +166,15 @@ public class AdminController {
         }
     }
 
+    @DeleteMapping("/sellers/{username}")
+    public ResponseEntity<String> deleteSeller(@PathVariable String username) {
+        try {
+            String message = adminService.deleteSeller(username);
+            return new ResponseEntity<>(message, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
 
     @PutMapping("/sellers/{username}/reset-password")
     public ResponseEntity<?> resetSellerPassword(@PathVariable String username, @RequestBody ChangePassword passwordRequest) {
