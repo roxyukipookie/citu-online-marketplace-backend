@@ -49,7 +49,7 @@ public class AdminController {
         return adminService.viewAllProducts();
     }
 
-    @PostMapping("/products")
+    @PostMapping("/addproducts")
     public String createProduct(@RequestBody ProductEntity productEntity) {
         adminService.createProduct(productEntity);
         return "Product created successfully.";
@@ -60,12 +60,12 @@ public class AdminController {
         return adminService.getProductByCode(code);
     }
 
-    @PutMapping("/products/{code}")
+    @PutMapping("/editproducts/{code}")
     public ProductEntity updateProduct(@PathVariable int code, @RequestBody ProductEntity updatedProduct) {
         return adminService.updateProduct(code, updatedProduct);
     }
 
-    @DeleteMapping("/products/{code}")
+    @DeleteMapping("/deleteproducts/{code}")
     public String deleteProduct(@PathVariable int code) {
         return adminService.deleteProduct(code);
     }
