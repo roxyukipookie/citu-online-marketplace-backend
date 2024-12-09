@@ -22,6 +22,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import javax.naming.NameNotFoundException;
 
@@ -82,6 +83,20 @@ public class AdminController {
 				return ResponseEntity.status(401).body(null);
 	}
     
+    @PostMapping("/addAdmin")
+    public ResponseEntity<Map<String, String>> addAdmin(@RequestBody AdminEntity adminEntity) {
+        try {
+            AdminEntity savedAdmin = adminService.addAdmin(adminEntity);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Admin added successfully");
+            response.put("adminId", String.valueOf(savedAdmin.getId())); // assuming AdminEntity has an ID field
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to add admin: " + e.getMessage()));
+        }
+    }
+    
     @GetMapping("/getAdminRecord/{username}") 
 	public AdminEntity getAdminByUsername(@PathVariable String username) throws NameNotFoundException {
 		return adminService.getAdminByUsername(username);
@@ -97,7 +112,12 @@ public class AdminController {
   		return adminService.deleteAdmin(username);
   	}
   	
-
+ // New Endpoint to Get All Admins
+    @GetMapping("/getAllAdmins")
+    public List<AdminEntity> getAllAdmins() {
+        return adminService.getAllAdmins();
+    }
+  	
   	@GetMapping("/products")
     public List<ProductEntity> viewAllProducts() {
         return adminService.viewAllProducts();
@@ -124,7 +144,6 @@ public class AdminController {
         return adminService.deleteProduct(code);
     }
     
-    // handles bulk deleting
     @DeleteMapping("/delete-products")
     public ResponseEntity<?> deleteProducts(@RequestBody List<Integer> productCodes) {
         try {
@@ -137,24 +156,8 @@ public class AdminController {
             return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
- // New Endpoint to Get All Admins
-    @GetMapping("/getAllAdmins")
-    public List<AdminEntity> getAllAdmins() {
-        return adminService.getAllAdmins();
-    }
-    
-    // Seller Management Endpoints
 
-    @PostMapping("/sellers")
-    public ResponseEntity<String> createSeller(@RequestBody SellerEntity seller) {
-        try {
-            adminService.createSeller(seller);
-            return new ResponseEntity<>("Seller created successfully.", HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
+    // Seller Management Endpoints
 
     @GetMapping("/sellers")
     public ResponseEntity<?> getAllSellers() {
@@ -210,4 +213,65 @@ public class AdminController {
     public ResponseEntity<List<Map<String, Object>>> getProductsWithSellers() {
         return ResponseEntity.ok(adminService.getAllProductsWithSellers());
     }
+    
+    @PutMapping("/updateUserDetails/{role}/{username}")
+    public ResponseEntity<?> updateUserDetails(
+            @PathVariable String role,
+            @PathVariable String username,
+            @RequestBody Map<String, String> userDetails) {
+        try {
+            if ("admin".equalsIgnoreCase(role)) {
+                AdminEntity admin = adminService.getAdminByUsername(username);
+
+                // Update fields
+                admin.setFirstName(userDetails.get("firstName"));
+                admin.setLastName(userDetails.get("lastName"));
+                admin.setEmail(userDetails.get("email"));
+                admin.setContactNo(userDetails.get("contactNo"));
+
+                // Save updated admin
+                AdminEntity updatedAdmin = adminService.putAdminDetails(username, admin);
+                return new ResponseEntity<>(updatedAdmin, HttpStatus.OK);
+            } else if ("seller".equalsIgnoreCase(role)) {
+                SellerEntity seller = adminService.getSellerByUsername(username);
+
+                // Update fields
+                seller.setFirstName(userDetails.get("firstName"));
+                seller.setLastName(userDetails.get("lastName"));
+                seller.setEmail(userDetails.get("email"));
+                seller.setContactNo(userDetails.get("contactNo"));
+
+                // Save updated seller
+                SellerEntity updatedSeller = adminService.updateSellerDetails(username, seller);
+                return new ResponseEntity<>(updatedSeller, HttpStatus.OK);
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("message", "Invalid role. Use 'admin' or 'seller'."));
+            }
+        } catch (NameNotFoundException | NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An unexpected error occurred: " + e.getMessage()));
+        }
+    }
+    
+    @DeleteMapping("/deleteUser/{role}/{username}")
+    public ResponseEntity<Map<String, String>> deleteUser(
+            @PathVariable String role, 
+            @PathVariable String username) {
+        try {
+            String message = adminService.deleteUser(role, username);
+            return ResponseEntity.ok(Map.of("message", message));
+        } catch (NameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "An unexpected error occurred: " + e.getMessage()));
+        }
+    }
+
+
 }

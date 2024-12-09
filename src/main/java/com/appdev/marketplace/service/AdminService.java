@@ -95,6 +95,7 @@ public class AdminService {
         return adminRepo.findByUsername(username)
                 .orElseThrow(() -> new NoSuchElementException("Admin with username " + username + " not found"));
     }
+ 
 
     // Create a new admin
     public AdminEntity createAdmin(AdminEntity adminEntity) {
@@ -146,7 +147,7 @@ public class AdminService {
     public int deleteProductsByCodes(List<Integer> productCodes) {
         return productRepo.deleteByCodeIn(productCodes);
     }
-    
+
     // Create a new product
     public ProductEntity createProduct(ProductEntity productEntity) {
         return productRepo.save(productEntity);
@@ -169,9 +170,7 @@ public class AdminService {
         existingProduct.setBuyPrice(updatedProduct.getBuyPrice());
         existingProduct.setCategory(updatedProduct.getCategory());
         existingProduct.setStatus(updatedProduct.getStatus());
-        existingProduct.setConditionType(updatedProduct.getConditionType());
-        existingProduct.setImagePath(updatedProduct.getImagePath());
-
+        
         return productRepo.save(existingProduct);
     }
 
@@ -244,5 +243,30 @@ public class AdminService {
         // Reset password logic
         seller.setPassword(passwordRequest.getNewPassword());
         return sellerRepo.save(seller);
+    }
+    
+    public String deleteUser(String role, String username) throws NameNotFoundException {
+        if ("admin".equalsIgnoreCase(role)) {
+            AdminEntity admin = getAdminByUsername(username);
+            if (admin == null) {
+                throw new NameNotFoundException("Admin with username '" + username + "' not found.");
+            }
+            deleteAdmin(username);
+            return "Admin with username '" + username + "' has been deleted successfully.";
+        } else if ("seller".equalsIgnoreCase(role)) {
+            SellerEntity seller = getSellerByUsername(username);
+            if (seller == null) {
+                throw new NameNotFoundException("Seller with username '" + username + "' not found.");
+            }
+            deleteSeller(username);
+            return "Seller with username '" + username + "' has been deleted successfully.";
+        } else {
+            throw new IllegalArgumentException("Invalid role. Use 'admin' or 'seller'.");
+        }
+    }
+    
+    public AdminEntity addAdmin(AdminEntity adminEntity) {
+        // Perform any necessary validation or preprocessing here
+        return adminRepo.save(adminEntity);
     }
 }
