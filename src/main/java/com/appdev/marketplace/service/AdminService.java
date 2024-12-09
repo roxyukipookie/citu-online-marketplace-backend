@@ -135,6 +135,7 @@ public class AdminService {
                 details.put("productCode", product.getCode());
                 details.put("category", product.getCategory());
                 details.put("status", product.getStatus());
+                details.put("image", product.getImagePath());
                 details.put("sellerUsername", product.getSeller() != null ? product.getSeller().getUsername() : "Unknown");
                 return details;
             })

@@ -41,8 +41,8 @@ public class SellerController {
 	@Autowired
 	private SellerService sellerService;
 	
-	//private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/uploads"; // path to save the images
-	private static final String UPLOAD_DIR = "C:/Users/chriz/Downloads/"; // path to save the images
+	private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/uploads"; // path to save the images
+	//private static final String UPLOAD_DIR = "C:/Users/chriz/Downloads/"; // path to save the images
 	
 
 	//CREATE

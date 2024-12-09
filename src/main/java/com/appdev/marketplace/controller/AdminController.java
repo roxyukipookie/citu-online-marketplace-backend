@@ -33,8 +33,8 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
     
-	//private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/uploads"; // path to save the images
-	private static final String UPLOAD_DIR = "C:/Users/chriz/Downloads/";
+	private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/uploads"; // path to save the images
+	//private static final String UPLOAD_DIR = "C:/Users/chriz/Downloads/";
 
 	@PostMapping("/uploadProfilePhoto/{username}")
 	public ResponseEntity<Map<String,String>> uploadProfilePhoto(@PathVariable String username, @RequestParam("file") MultipartFile file) throws NameNotFoundException {

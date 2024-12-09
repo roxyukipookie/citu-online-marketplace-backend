@@ -45,8 +45,8 @@ public class ProductController {
 	@Autowired
     private AdminService adminService;
 
-	//private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/"; // C:/Users/chriz/Downloads/
-	private static final String UPLOAD_DIR = "C:/Users/chriz/Downloads/";
+	private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/"; // C:/Users/chriz/Downloads/
+	//private static final String UPLOAD_DIR = "C:/Users/chriz/Downloads/";
 	
 	@GetMapping("/pendingApproval")
     public List<Map<String, Object>> getPendingApprovalProducts() {
