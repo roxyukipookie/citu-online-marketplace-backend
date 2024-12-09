@@ -142,6 +142,12 @@ public class AdminService {
             .collect(Collectors.toList());
     }
     
+    // handles bulk deleting
+    @Transactional
+    public int deleteProductsByCodes(List<Integer> productCodes) {
+        return productRepo.deleteByCodeIn(productCodes);
+    }
+    
     // Create a new product
     public ProductEntity createProduct(ProductEntity productEntity) {
         return productRepo.save(productEntity);

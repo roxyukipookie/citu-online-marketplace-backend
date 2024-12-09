@@ -124,6 +124,19 @@ public class AdminController {
         return adminService.deleteProduct(code);
     }
     
+    // handles bulk deleting
+    @DeleteMapping("/delete-products")
+    public ResponseEntity<?> deleteProducts(@RequestBody List<Integer> productCodes) {
+        try {
+            int deletedCount = adminService.deleteProductsByCodes(productCodes);
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Products deleted successfully.");
+            response.put("deletedCount", deletedCount);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     
     // Seller Management Endpoints
 
