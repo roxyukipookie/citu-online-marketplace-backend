@@ -83,7 +83,6 @@ public class AdminService {
   	    return adminRepo.save(admin);
   	}
   	
-
     // ========================= Admin Management =========================
 
     // Get all admins
@@ -247,4 +246,3 @@ public class AdminService {
         return sellerRepo.save(seller);
     }
 }
-

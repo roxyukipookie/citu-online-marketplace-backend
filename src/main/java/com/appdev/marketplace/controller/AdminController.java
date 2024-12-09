@@ -138,6 +138,12 @@ public class AdminController {
         }
     }
     
+ // New Endpoint to Get All Admins
+    @GetMapping("/getAllAdmins")
+    public List<AdminEntity> getAllAdmins() {
+        return adminService.getAllAdmins();
+    }
+    
     // Seller Management Endpoints
 
     @PostMapping("/sellers")
