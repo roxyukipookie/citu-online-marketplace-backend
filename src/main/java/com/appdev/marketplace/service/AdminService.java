@@ -117,6 +117,18 @@ public class AdminService {
   		
   		return msg;
   	}
+  	
+  	public AdminEntity updatePassword(String username, ChangePassword passwordRequest) throws NameNotFoundException{
+		AdminEntity admin = adminRepo.findByUsername(username)
+		        .orElseThrow(() -> new NameNotFoundException("Admin with username: " + username + " does not exist"));
+		
+		if(!admin.getPassword().equals(passwordRequest.getCurrentPassword())) {
+			throw new RuntimeException("Current password is incorrect.");
+		}
+		
+		admin.setPassword(passwordRequest.getNewPassword());
+		return adminRepo.save(admin);
+	}
 
     // ========================= Product Management =========================
 

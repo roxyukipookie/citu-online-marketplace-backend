@@ -273,5 +273,8 @@ public class AdminController {
         }
     }
 
-
+    @PutMapping("/changePassword/{username}")
+	public AdminEntity updatePassword(@PathVariable String username, @RequestBody ChangePassword passwordRequest) throws NameNotFoundException {
+		return adminService.updatePassword(username, passwordRequest);
+	}
 }

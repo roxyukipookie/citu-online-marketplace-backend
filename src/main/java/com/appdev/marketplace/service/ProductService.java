@@ -45,6 +45,11 @@ public class ProductService {
 		List<ProductEntity> products = prepo.findBySellerUsernameNot(username);
 		return products;
 	}
+	
+	public List<ProductEntity> getProducts(String username) {
+		List<ProductEntity> products = prepo.findBySellerUsername(username);
+		return products;
+	}
 
 	// Create a new product and associate it with a seller
 	public void postProduct(String name, String pdtDescription, int qtyInStock, float buyPrice, String imagePath,
