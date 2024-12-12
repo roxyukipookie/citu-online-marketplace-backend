@@ -90,6 +90,29 @@ public class ProductController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
+	
+	@GetMapping("/getSellerByProductCode/{code}")
+    public ResponseEntity<Map<String, String>> getSellerByProductCode(@PathVariable int code) {
+        try {
+            // Fetch the product by code
+            ProductEntity product = pserv.getProductByCode(code);
+            
+            if (product == null || product.getSeller() == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Product or Seller not found"));
+            }
+
+            // Get seller's username
+            String sellerUsername = product.getSeller().getUsername();
+
+            // Return seller username as JSON response
+            Map<String, String> response = Map.of("sellerUsername", sellerUsername);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            System.err.println("Error fetching seller username: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "An error occurred"));
+        }
+    }
 
 	// fetches only the products where the seller's username does not match the
 	// logged-in seller's username
