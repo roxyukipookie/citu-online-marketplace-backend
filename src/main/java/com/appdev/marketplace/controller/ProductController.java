@@ -251,13 +251,33 @@ public class ProductController {
 	}
 
 	@GetMapping("/getProductByCode/{code}")
-	public ResponseEntity<ProductEntity> getProductByCode(@PathVariable int code) {
-		ProductEntity product = pserv.getProductByCode(code);
-		if (product != null) {
-			return ResponseEntity.ok(product);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+	public ResponseEntity<Map<String, Object>> getProductByCode(@PathVariable int code) {
+	    try {
+	        ProductEntity product = pserv.getProductByCode(code);
+
+	        if (product == null) {
+	            return ResponseEntity.notFound().build();
+	        }
+
+	        Map<String, Object> response = new HashMap<>();
+	        response.put("code", product.getCode());
+	        response.put("name", product.getName());
+	        response.put("status", product.getStatus());
+	        response.put("pdtDescription", product.getPdtDescription());
+	        response.put("buyPrice", product.getBuyPrice());
+	        response.put("imagePath", product.getImagePath());
+
+	        // Include seller's information
+	        if (product.getSeller() != null) {
+	            response.put("sellerUsername", product.getSeller().getUsername());
+	            response.put("sellerPhoto", product.getSeller().getProfilePhoto());
+	        }
+
+	        return ResponseEntity.ok(response);
+	    } catch (Exception ex) {
+	        System.err.println("An error occurred while retrieving the product: " + ex.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	    }
 	}
 
 	@PutMapping("/putProductDetails/{code}")
