@@ -15,6 +15,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -220,7 +223,14 @@ public class ProductController {
 		// Return response
 		return response.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(response);
 	}
-
+	
+	@Operation(summary = "Adding a Product", description = "Users can add a product to sell.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Product added successfully"),
+			@ApiResponse(responseCode = "400", description = "Bad Request - Invalid Input"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
+			
 	@PostMapping("/postproduct")
 	public ResponseEntity<String> postProduct(@RequestParam("name") String name,
 			@RequestParam("pdtDescription") String description, @RequestParam("qtyInStock") int quantity,
@@ -253,7 +263,12 @@ public class ProductController {
 
 		return new ResponseEntity<>("Product added successfully with image path", HttpStatus.OK);
 	}
-
+	
+	@Operation(summary = "Viewing a Product", description = "Users can view a product.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Successfully retrieved product"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 	@GetMapping("/getProductByCode/{code}")
 	public ResponseEntity<Map<String, Object>> getProductByCode(@PathVariable int code) {
 	    try {
@@ -315,6 +330,13 @@ public class ProductController {
 		// Call the service to update other product details
 		return pserv.putProductDetails(code, newProductEntity);
 	}
+	
+	@Operation(summary = "Deleting a Product", description = "Users can delete a product.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Product deleted successfully"),
+			@ApiResponse(responseCode = "400", description = "Bad Request - Invalid Input"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 
 	// Delete of CRUD
 	@DeleteMapping("deleteProduct/{code}")
