@@ -14,6 +14,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,7 @@ import com.appdev.marketplace.service.ProductService;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(method = RequestMethod.GET, path = "/api/product")
+@Tag(name = "Product API", description = "Endpoints for Product Management")
 public class ProductController {
 
 	@Autowired

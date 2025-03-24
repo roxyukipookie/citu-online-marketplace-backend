@@ -13,6 +13,11 @@ import java.util.Map;
 import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,17 +42,23 @@ import com.appdev.marketplace.service.SellerService;
 @RestController
 @RequestMapping("/api/seller")
 @CrossOrigin(origins = "http://localhost:3000")  // Allow CORS from React app
+@Tag(name = "Seller API", description = "Endpoints for Seller Authentication and Management")
 public class SellerController {
 	@Autowired
 	private SellerService sellerService;
 	
 	private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/uploads"; // path to save the images
 	//private static final String UPLOAD_DIR = "C:/Users/chriz/Downloads/"; // path to save the images
-	
 
+
+	@Operation(summary = "Create a New Seller", description = "Registers a new seller in the marketplace.")
+	@ApiResponse(responseCode = "200", description = "Registration successful")
+	@ApiResponse(responseCode = "400", description = "Bad Request - Invalid Input")
+	@ApiResponse(responseCode = "500", description = "Internal Server Error")
 	//CREATE
 	@PostMapping("/postSellerRecord")
-	public ResponseEntity<?> postSellerRecord(@RequestBody SellerEntity seller) throws NameAlreadyBoundException {
+	public ResponseEntity<?> postSellerRecord(@Parameter(description = "Seller entity containing required seller details", required = true, schema = @Schema(implementation = SellerEntity.class))
+												  @RequestBody SellerEntity seller) throws NameAlreadyBoundException {
 		if (seller.getUsername().isEmpty() || seller.getPassword().isEmpty() || seller.getFirstName().isEmpty() || seller.getLastName().isEmpty() || seller.getAddress().isEmpty() || seller.getContactNo().isEmpty() || seller.getEmail().isEmpty()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "All fields are required"));
 		} else if (seller.getPassword().length() < 8) {
@@ -62,7 +73,11 @@ public class SellerController {
 	                             .body(Map.of("message", e.getMessage()));
 	    }
 	}
-		
+
+	@Operation(summary = "Custom User Login", description = "Handles Form-based User Login")
+	@ApiResponse(responseCode = "200", description = "Login successful")
+	@ApiResponse(responseCode = "400", description = "Bad Request - Missing email")
+	@ApiResponse(responseCode = "500", description = "Internal Server Error")
 	@PostMapping("login")
 	public ResponseEntity<Map<String, String>> login(@RequestBody Login loginRequest) {
 		String username = loginRequest.getUsername();

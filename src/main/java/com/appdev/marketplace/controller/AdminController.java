@@ -1,5 +1,6 @@
 package com.appdev.marketplace.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,7 @@ import javax.naming.NameNotFoundException;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(method = RequestMethod.GET,path="/api/admin")
+@Tag(name = "Admin API", description = "Endpoints for Admin Authentication and Product Management")
 public class AdminController {
 
     @Autowired
