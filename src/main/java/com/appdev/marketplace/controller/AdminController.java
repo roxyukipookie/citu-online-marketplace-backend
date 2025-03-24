@@ -1,5 +1,6 @@
 package com.appdev.marketplace.controller;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ import java.util.NoSuchElementException;
 
 import javax.naming.NameNotFoundException;
 
+@Hidden  // Hides the entire controller from Swagger Documentation
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(method = RequestMethod.GET,path="/api/admin")

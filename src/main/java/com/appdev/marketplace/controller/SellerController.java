@@ -15,8 +15,10 @@ import javax.naming.NameNotFoundException;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,9 +54,12 @@ public class SellerController {
 
 
 	@Operation(summary = "Create a New Seller", description = "Registers a new seller in the marketplace.")
-	@ApiResponse(responseCode = "200", description = "Registration successful")
-	@ApiResponse(responseCode = "400", description = "Bad Request - Invalid Input")
-	@ApiResponse(responseCode = "500", description = "Internal Server Error")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Seller created successfully"),
+			@ApiResponse(responseCode = "400", description = "Invalid input or missing fields"),
+			@ApiResponse(responseCode = "409", description = "Seller already exists"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 	//CREATE
 	@PostMapping("/postSellerRecord")
 	public ResponseEntity<?> postSellerRecord(@Parameter(description = "Seller entity containing required seller details", required = true, schema = @Schema(implementation = SellerEntity.class))
@@ -74,10 +79,15 @@ public class SellerController {
 	    }
 	}
 
-	@Operation(summary = "Custom User Login", description = "Handles Form-based User Login")
-	@ApiResponse(responseCode = "200", description = "Login successful")
-	@ApiResponse(responseCode = "400", description = "Bad Request - Missing email")
-	@ApiResponse(responseCode = "500", description = "Internal Server Error")
+	@Operation(summary = "Login Seller", description = "Authenticates a seller with username and password")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Login successful",
+					content = @Content(mediaType = "application/json", schema = @Schema(implementation = Map.class))),
+			@ApiResponse(responseCode = "400", description = "Bad Request"),
+			@ApiResponse(responseCode = "401", description = "Unauthorized",
+					content = @Content),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 	@PostMapping("login")
 	public ResponseEntity<Map<String, String>> login(@RequestBody Login loginRequest) {
 		String username = loginRequest.getUsername();
@@ -98,9 +108,17 @@ public class SellerController {
 			} else 
 				return ResponseEntity.status(401).body(null);
 	}
-	
+
+	@Operation(summary = "Upload Profile Photo", description = "Uploads a profile photo for a specific seller")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Photo uploaded successfully"),
+			@ApiResponse(responseCode = "400", description = "No file selected"),
+			@ApiResponse(responseCode = "500", description = "Failed to upload the file")
+	})
 	@PostMapping("/uploadProfilePhoto/{username}")
-	public ResponseEntity<Map<String,String>> uploadProfilePhoto(@PathVariable String username, @RequestParam("file") MultipartFile file) throws NameNotFoundException {
+	public ResponseEntity<Map<String,String>> uploadProfilePhoto(
+			@Parameter(description = "Seller's username") @PathVariable String username,
+			@Parameter(description = "Profile photo file") @RequestParam("file") MultipartFile file) throws NameNotFoundException {
 		try {
 			if(file.isEmpty()) 
 				return ResponseEntity.badRequest().body(Map.of("message", "No file selected"));
@@ -124,41 +142,72 @@ public class SellerController {
 			return ResponseEntity.status(500).body(Map.of("message", "Failed to upload the file"));
 		}
 	}
-		
+
+	@Operation(summary = "Get All Sellers", description = "Fetches all seller records")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "List of sellers retrieved successfully"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 	//DISPLAY RECORD
 	@GetMapping("/getSellerRecord")
 	public List<SellerEntity> getAllSellers() {
 		return sellerService.getAllSellers();
 	}
-	
+
+	@Operation(summary = "Get Seller by Username", description = "Fetch a seller's details by username")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Seller record retrieved successfully"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 	@GetMapping("/getSellerRecord/{username}") 
-	public SellerEntity getSellerByUsername(@PathVariable String username) throws NameNotFoundException {
+	public SellerEntity getSellerByUsername(@Parameter(description = "Seller's username") @PathVariable String username) throws NameNotFoundException {
 		return sellerService.getSellerByUsername(username);
 	}
-	
+
+	@Operation(summary = "Get a Seller's Username", description = "Fetch a seller's username")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Seller username retrieved successfully"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 	@GetMapping("/getUsername/{username}")
-    public String getSellerUsername(@PathVariable String username) throws NameNotFoundException {
+    public String getSellerUsername(@Parameter(description = "Seller's username") @PathVariable String username) throws NameNotFoundException {
         SellerEntity seller = sellerService.getSellerByUsername(username);
         if (seller == null) {
             throw new NameNotFoundException("Seller with username " + username + " not found");
         }
         return seller.getUsername();
     }
-		
+
+	@Operation(summary = "Update Seller Details", description = "Updates a seller's information")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Seller record updated successfully"),
+			@ApiResponse(responseCode = "404", description = "Seller not found"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 	//UPDATE RECORD
 	@PutMapping("/putSellerRecord/{username}")
-	public SellerEntity putSellerRecord(@PathVariable String username, @RequestBody SellerEntity newSellerDetails) throws NameNotFoundException {
+	public SellerEntity putSellerRecord(@Parameter(description = "Seller's username") @PathVariable String username, @RequestBody SellerEntity newSellerDetails) throws NameNotFoundException {
 		return sellerService.putSellerDetails(username, newSellerDetails);
 	}
-	
+
+	@Operation(summary = "Update Seller Password", description = "Updates a seller's password")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Password updated successfully"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 	@PutMapping("/changePassword/{username}")
-	public SellerEntity updatePassword(@PathVariable String username, @RequestBody ChangePassword passwordRequest) throws NameNotFoundException {
+	public SellerEntity updatePassword(@Parameter(description = "Seller's username") @PathVariable String username, @RequestBody ChangePassword passwordRequest) throws NameNotFoundException {
 		return sellerService.updatePassword(username, passwordRequest);
 	}
-		
+
+	@Operation(summary = "Delete Seller", description = "Deletes a seller by username")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Seller deleted successfully"),
+			@ApiResponse(responseCode = "404", description = "Seller not found")
+	})
 	//DELETE RECORD
 	@DeleteMapping("/deleteSellerRecord/{username}")
-	public String deleteSeller(@PathVariable String username) {
+	public String deleteSeller(@Parameter(description = "Seller's username") @PathVariable String username) {
 		return sellerService.deleteSeller(username);
 	}
 }

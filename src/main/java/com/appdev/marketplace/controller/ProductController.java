@@ -14,6 +14,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,6 +37,7 @@ import com.appdev.marketplace.entity.ProductEntity;
 import com.appdev.marketplace.service.AdminService;
 import com.appdev.marketplace.service.ProductService;
 
+@Hidden  // Hides the entire controller from Swagger Documentation
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(method = RequestMethod.GET, path = "/api/product")
