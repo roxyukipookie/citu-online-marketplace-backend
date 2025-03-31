@@ -52,9 +52,8 @@ public class ProductController {
 	@Autowired
     private AdminService adminService;
 
-	//private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/"; // C:/Users/chriz/Downloads/
+	private static final String UPLOAD_DIR = "C:/Users/Lloyd/Downloads/"; // C:/Users/chriz/Downloads/
 	//private static final String UPLOAD_DIR = "C:/Users/chriz/Downloads/";
-	private static final String UPLOAD_DIR = System.getProperty("user.home") + "/Downloads/";
 	
 	@GetMapping("/pendingApproval")
     public List<Map<String, Object>> getPendingApprovalProducts() {
@@ -160,7 +159,6 @@ public class ProductController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
-	
 	@GetMapping("/getProducts/{username}")
 	public ResponseEntity<List<Map<String, Object>>> getProducts(@PathVariable String username) {
 		try {
