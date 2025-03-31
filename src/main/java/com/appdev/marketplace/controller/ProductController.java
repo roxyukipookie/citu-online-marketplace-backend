@@ -40,7 +40,6 @@ import com.appdev.marketplace.entity.ProductEntity;
 import com.appdev.marketplace.service.AdminService;
 import com.appdev.marketplace.service.ProductService;
 
-@Hidden  // Hides the entire controller from Swagger Documentation
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(method = RequestMethod.GET, path = "/api/product")
