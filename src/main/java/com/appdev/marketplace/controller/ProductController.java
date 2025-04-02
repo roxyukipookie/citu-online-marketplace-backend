@@ -55,11 +55,16 @@ public class ProductController {
 	//private static final String UPLOAD_DIR = "C:/Users/chriz/Downloads/";
 	private static final String UPLOAD_DIR = System.getProperty("user.home") + "/Downloads/";
 
+	@Hidden
 	@GetMapping("/pendingApproval")
     public List<Map<String, Object>> getPendingApprovalProducts() {
         return adminService.getAllProductsWithSellers();
     }
-	
+	@Operation(summary = "Fetch Products by Seller", description = "Seller can view their products through Profile Listing")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "No products found for seller: \" + username"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 	// get products by logged in seller
 	@GetMapping("/getProductsBySeller/{username}")
 	public ResponseEntity<List<Map<String, Object>>> getProductsBySeller(@PathVariable String username) {
@@ -97,7 +102,7 @@ public class ProductController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
-	
+	@Hidden
 	@GetMapping("/getSellerByProductCode/{code}")
     public ResponseEntity<Map<String, String>> getSellerByProductCode(@PathVariable int code) {
         try {
@@ -123,7 +128,12 @@ public class ProductController {
 
 	// fetches only the products where the seller's username does not match the
 	// logged-in seller's username
-	@GetMapping("/getAllProducts/{username}")
+	@Operation(summary = "Viewing Products by Username", description = "Fetching products that do not match the username of the logged-in seller/user")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "400", description = "No products found for seller: \" + username"),
+			@ApiResponse(responseCode = "500", description = "An error occurred while retrieving products")
+	})
+	@GetMapping("/getAllProducts/{username}")//apil ni
 	public ResponseEntity<List<Map<String, Object>>> getAllProducts(@PathVariable String username) {
 		try {
 			List<ProductEntity> products = pserv.getAllProducts(username);
@@ -159,6 +169,7 @@ public class ProductController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
+	@Hidden
 	@GetMapping("/getProducts/{username}")
 	public ResponseEntity<List<Map<String, Object>>> getProducts(@PathVariable String username) {
 		try {
@@ -197,6 +208,12 @@ public class ProductController {
 	}
 
 	// Filtering Products
+	@Operation(summary = "Filter for Browsing Products", description = "Users can easily find the products they want by using the filter")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Products filtered"),
+			@ApiResponse(responseCode = "400", description = "Bad Request - Invalid Input"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 	@GetMapping("/getAllProductsFilter/{username}")
 	public ResponseEntity<List<Map<String, Object>>> getAllProductsFilter(@PathVariable String username,
 			@RequestParam(required = false) String category, @RequestParam(required = false) String status,
@@ -298,6 +315,13 @@ public class ProductController {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	    }
 	}
+	
+	@Operation(summary = "Modifying a Product", description = "Users can modify product details.")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Product modified successfully"),
+			@ApiResponse(responseCode = "400", description = "Bad Request - Invalid Input"),
+			@ApiResponse(responseCode = "500", description = "Internal server error")
+	})
 
 	@PutMapping("/putProductDetails/{code}")
 	public ProductEntity putProductDetails(@PathVariable int code,
@@ -344,6 +368,7 @@ public class ProductController {
 		return pserv.deleteProduct(code);
 	}
 	
+	@Hidden
 	@PostMapping("/approve")
     public ResponseEntity<String> approveProduct(@RequestBody Map<String, Integer> request) {
         int productCode = request.get("productCode");
@@ -356,12 +381,14 @@ public class ProductController {
     }
 	
 	// Endpoint to get approved products
+	@Hidden
     @GetMapping("/approved")
     public List<ProductEntity> getApprovedProducts() {
         return pserv.getApprovedProducts();
     }
 	
 	// Reject Product
+	@Hidden
     @PostMapping("/reject")
     public ResponseEntity<String> rejectProduct(@RequestBody Map<String, Integer> request) {
         int productCode = request.get("productCode");
